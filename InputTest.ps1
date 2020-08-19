@@ -1,21 +1,43 @@
 #requires -version 1
+
+$application=$args[0]
+switch ($application) {
+    TOX { 
+        $username=$args[1];
+        $password=$args[2];
+        $arguments = "https://sniaccess.mop.esni.ibm.com:900 France " + $username
+        $filepath = "C:\Program Files (x86)\Toxclient\toxclient.exe"
+        Break
+     }
+    
+    Notes { 
+        $password=$args[1];
+        $arguments = ""
+        $filepath = "C:\Notes\notes.exe"
+        Break
+     }
+    
+}
+
+
 <#
-add-type -AssemblyName microsoft.VisualBasic
-add-type -AssemblyName System.Windows.Forms
-Calc
-start-sleep -Milliseconds 500
-
-Invoke-Expression [Microsoft.VisualBasic.Interaction]::AppActivate("Calc")
-Invoke-Expression [System.Windows.Forms.SendKeys]::SendWait("1{ADD}1=")
+$username=$args[1]
+$password=$args[2]
 #>
-$username=$args[0]
-$password=$args[1]
-$test=$args[2]
 
-$arguments = "https://sniaccess.mop.esni.ibm.com:900 France " + $username
+
+
 #https://stackoverflow.com/questions/24286055/user-input-for-external-program-in-powershell
 $Wscript = New-Object -com wscript.shell
-Start-Process -FilePath "C:\Program Files (x86)\Toxclient\toxclient.exe" -Argumentlist $arguments;
-Start-sleep -seconds 1;
+if ($arguments -ne "") {
+    Start-Process -FilePath $filepath -Argumentlist $arguments;    
+} else {
+    Start-Process -FilePath $filepath
+}
+  
+Start-sleep -seconds 20;
+if ($username -ne "") {
+    $wscript.SendKeys($username);   
+}
 $wscript.SendKeys($password);
 $wscript.SendKeys("{Enter}")
