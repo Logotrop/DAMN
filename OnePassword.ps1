@@ -50,13 +50,15 @@ if (Test-Path $pwd\session.txt) {
     
     if ($SessionFile -eq '') {
         OPSignin
-    } else {
+    }
+    else {
         $Session_Token = $SessionFile
     }
     
     if ([String]$TimeFile -eq '') {
         OPSignin
-    } else {
+    }
+    else {
         $TimeBefore = $TimeFile
     }
 
@@ -64,11 +66,13 @@ if (Test-Path $pwd\session.txt) {
 
         $Session_Token = $SessionFile
         Write-Output("Hello!")
-    } else {
+    }
+    else {
         OPSignin
     }
     
-} else {
+}
+else {
     OPSignin
     $Session_Token = Get-Content -Path $pwd\session.txt -TotalCount 1
 } 
@@ -78,7 +82,7 @@ Write-Output((Get-Content -Path $pwd\session.txt -TotalCount 3)[-1])
 $allitems = "C://op/op.exe get item - --fields password username title"
 $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
 
-$clients = '*Klesia*','*Fnac*','*GEMB*','*MMB*','*Swisslife*','*Mutualized*','*Fraikin*','*Util*','*Manpower*','*Trenitalia*','*Tsod*','*Carefour*','*PSA*','*SNCF*','*IBM*'
+$clients = '*Klesia*', '*Fnac*', '*GEMB*', '*MMB*', '*Swisslife*', '*Mutualized*', '*Fraikin*', '*Util*', '*Manpower*', '*Trenitalia*', '*Tsod*', '*Carefour*', '*PSA*', '*SNCF*', '*IBM*'
 
 
 
@@ -96,23 +100,23 @@ $ArrayOfLogins = Invoke-Expression $allLogins
 #Write-Output($ArrayOfLogins.GetType())
 #if (false) {
 
-    foreach ($i in $ArrayOfLogins) {
-        #Write-Output($i.GetType())
-        foreach ($client in $clients) {
-            #Write-Output($i)
-            $i = $i.replace('"',"")
-            $i = $i.Replace("{","")
-            $i = $i.replace('}',"")
-            if ($i -like $client ) {
-                Write-Output($client)
-                $toarray = $i.split(",")
-                foreach ($a in $toarray.Replace('"',"")) {
-                    Write-Output($a)
-                }
-                Write-Output('')    
+foreach ($i in $ArrayOfLogins) {
+    #Write-Output($i.GetType())
+    foreach ($client in $clients) {
+        #Write-Output($i)
+        $i = $i.replace('"', "")
+        $i = $i.Replace("{", "")
+        $i = $i.replace('}', "")
+        if ($i -like $client ) {
+            Write-Output($client)
+            $toarray = $i.split(",")
+            foreach ($a in $toarray.Replace('"', "")) {
+                Write-Output($a)
             }
+            Write-Output('')    
         }
-        
-        
     }
+        
+        
+}
 #}
