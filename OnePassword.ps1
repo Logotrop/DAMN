@@ -1,107 +1,127 @@
 #requires -version 3
-<#
-try {
-    Invoke-Expression Get-ChildItem Env:OPT
-}
-catch {
-    Write-Output "Time Variable not Setup!"
-    Write-Output "Running Initial Setup!"
-    [System.Environment]::SetEnvironmentVariable('OPT','0',[System.EnvironmentVariableTarget]::User)
-    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','0',[System.EnvironmentVariableTarget]::User)"
-}
-finally {
-    $Time = Get-ChildItem Env:OPT
-}
-$CurrentTime = Invoke-Expression "Get-Date -UFormat '%A %B/%d/%Y %T %Z'"
-$CurrentTime = Get-Date
-$CurrentTime.ToUniversalTime()
-$Time = Get-ChildItem Env:OPT
-if (!$Time) {
-    $Time = $CurrentTime
-}
-if ($Time = 30) {
-    $Session_Token = Invoke-Expression "C://op/op.exe signin ibm --raw"
-}
-#>
-
+#Signin into OnePassword
 function OPSignin {
+    $Session_Token = Invoke-Expression "$OPDIR signin ibm --raw" #Get Global Session Token for all Signups up to 30 mins after
 
-    $Session_Token = Invoke-Expression "$OPDIR signin ibm --raw"
-    Out-File -FilePath $pwd\session.txt -Encoding ASCII -InputObject $Session_Token
-    $TimeFile = Get-Date
+    #Make Enviromental variable OPST = One Password Session Token, That will hold Session in PATH
+    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
+    
+    Out-File -FilePath $pwd\session.txt -Encoding ASCII -InputObject $Session_Token #Backup Session?
+
+    
+    $TimeFile = Get-Date #Time stamp to verify age of the session
     $TimeFile = $TimeFile.AddMinutes(30)
-    Out-File -Append $pwd\session.txt -Encoding ASCII -InputObject $TimeFile
+
+    #Make Enviromental variable OPTF = One Password Time File, That will hold Time in PATH
+    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF','$TimeFile',[System.EnvironmentVariableTarget]::User)"
+    
+    Out-File -Append $pwd\session.txt -Encoding ASCII -InputObject $TimeFile  #Backup Time?
 }
+
+
 
 if (!(Test-Path $pwd\Op\op.exe)) {
+    Write-Output "OnePassword CLI Tool not found! Trying to istall it for you!"
+    #OnePassword CLI tool instalation if not installed
     Invoke-WebRequest "https://cache.agilebits.com/dist/1P/op/pkg/v1.4.0/op_windows_amd64_v1.4.0.zip" -OutFile OP.zip
     Expand-Archive -Path $pwd\op.zip -DestinationPath $pwd\Op
+
+    #Create Enviromental variables needed for this to work
+    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST',' ',[System.EnvironmentVariableTarget]::User)"
+    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF',' ',[System.EnvironmentVariableTarget]::User)"
 }
 [String]$OPDIR = "$pwd\Op\op.exe"
 
 
-#Signin into OnePassword
 
+
+$CurrentTime = Get-date #Guess What this does
+
+#Get values from enviromental variables
+$Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+#$TimeFile = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPFT',[System.EnvironmentVariableTarget]::User)"
+
+Write-Output $Session_Token
 #Check if session exists
-$CurrentTime = Get-date
-if (Test-Path $pwd\session.txt) {
-    $SessionFile = Get-Content -Path $pwd\session.txt -TotalCount 1
-    $TimeFile = ((Get-Content -Path $pwd\session.txt -TotalCount 3)[-1])
+if ($Session_Token -eq '' -or $Session_Token -eq ' ' -or $Session_Token -eq '0') {
     
-    if ($SessionFile -eq '') {
-        OPSignin
-    }
-    else {
-        $Session_Token = $SessionFile
-    }
-    
-    if ([String]$TimeFile -eq '') {
-        OPSignin
-    }
-    else {
-        $TimeBefore = $TimeFile
-    }
+    Write-Output "No Session Token in ENV!"
+    if (Test-Path $pwd\session.txt) { #if session file exists
+        #Try to get Backup Session and Time from file
+        $SessionFile = Get-Content -Path $pwd\session.txt -TotalCount 1 
+        #$TimeFile = ((Get-Content -Path $pwd\session.txt -TotalCount 3)[-1])
+        Write-Output "Session backup file exists!"
 
-    if ($TimeBefore -gt $CurrentTime ) {
+        if ($SessionFile -eq '') { #If backup Session is empty -> Signin
+            Write-Output "No Session in Backup File!"
+            OPSignin
+        }
+        else { #If Backup Exists -> Use it as Session token
 
-        $Session_Token = $SessionFile
-        Write-Output("Hello!")
-    }
-    else {
-        OPSignin
+            #There should be a check for a timestamp if the session is valid
+
+            $Session_Token = $SessionFile #Make Backup Session Main Session variable
+            Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
+            Write-Output "Using Session From Backup File!"
+        }
+    } else {
+        Write-Output "No Session.txt backup file!"
+        OPSignin #Signin and make a Backup File
+        $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
     }
     
 }
 else {
-    OPSignin
-    $Session_Token = Get-Content -Path $pwd\session.txt -TotalCount 1
-} 
-#Write-Output($Session_Token)
-Write-Output((Get-Content -Path $pwd\session.txt -TotalCount 3)[-1])
+    Write-Output "Found Session ENV Variable!"
+}
+Write-Output($Session_Token) #Does it work?
+#Write-Output((Get-Content -Path $pwd\session.txt -TotalCount 3)[-1]) #Is backup working?
 
-$allitems = "C://op/op.exe get item - --fields password username title"
+
+
+#List all entries in OnePassword
+#$allitems = "C://op/op.exe get item - --fields password username title --session $Session_Token"
+
+#List all Logins 
 $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
 
+#Client List
 $clients = '*Klesia*', '*Fnac*', '*GEMB*', '*MMB*', '*Swisslife*', '*Mutualized*', '*Fraikin*', '*Util*', '*Manpower*', '*Trenitalia*', '*Tsod*', '*Carefour*', '*PSA*', '*SNCF*', '*IBM*'
 
+#Client Array of usernames and passwords
+$Credentials = @()
+<#
+#Clients
+$Klesia = 
+$Fnac =
+$GEMB =
+$Mutualized =
+$Fraikin =
+$Utils =
+$Manpower =
+$Trenitalia =
+$Tsod =
+$Carefour =
+$PSA =
+$SNCF =
 
+#Applications
+$Notes =
+$TOX =
+$BlueZzz =
 
+#>
+$ArrayOfLogins = Invoke-Expression $allLogins #Get all logins from OnePassword
 
-#https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_arrays?view=powershell-7
-
-#Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
-
-
-#Write-Output($Session_Token)
-
-$ArrayOfLogins = Invoke-Expression $allLogins
-
-#Write-Output($ArrayOfLogins)
-#Write-Output($ArrayOfLogins.GetType())
-#if (false) {
-
+while ( $Null -eq $ArrayOfLogins) {
+    OPSignin
+    $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+    $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
+    $ArrayOfLogins = Invoke-Expression $allLogins
+}
+#Go thru all logins one by one
 foreach ($i in $ArrayOfLogins) {
-    #Write-Output($i.GetType())
+    
     foreach ($client in $clients) {
         #Write-Output($i)
         $i = $i.replace('"', "")
@@ -119,4 +139,3 @@ foreach ($i in $ArrayOfLogins) {
         
         
 }
-#}
