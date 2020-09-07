@@ -1,15 +1,37 @@
-# IBM OnePassword Integration Script
-Dark Magik Basicaly
+# D.A.M.N 
+Dynamic Autologon Massachusetts Neutrino
+or IBM OnePassword Integration Script 
+
+yes.
 
 # Setup
-run OnePasswordSetup.ps1 in Powershell
+run Setup.ps1 in Powershell
+add DAMN.ps1 to startup folder
 
 # What it does so far
  - can log into 1password
  - can list all credentials based on customers
  - formating of output based on tags and types of credentials
  - automatic relogin based on sessions
-
-# What I want to implement rn
  - Automatic login for supported applications
+ 
+# What I want to implement rn
  - Binary executables without AV freaking out
+ - GUI for easy settings
+ - Startup option (maybe even delay)
+ - Reading the content of the selected window
+ - Support for Sessions without the use of Macro files with plaintext passwords
+ - PECT integration
+ - Selected Website support
+ 
+ 
+# Long term goals
+ - Easy Manual adding process for easy automatization
+ - some repetitive workflow automatization
+ - alert system for failed checks
+ - Handover integration
+ - Automatic Focal point alert copy
+ - Automatic procedure open based on alert codes and code words
+ - BlueZzz or Maximo integration
+ - Care and PSA ticketing integration
+ 
