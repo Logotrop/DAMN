@@ -1,4 +1,4 @@
-# D.A.M.N 
+# D.A.M.N
 Dynamic Autologon Massachusetts Neutrino
 or IBM OnePassword Integration Script 
 
