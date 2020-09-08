@@ -1,5 +1,5 @@
 #requires -version 3
-Import-Module .\AutoItX.psd1
+Import-Module .\AX\AutoItX.psd1
 #Get-Command *AU3*
 
 function IsOpen {
@@ -7,16 +7,23 @@ function IsOpen {
     $winhandle = Get-AU3WinHandle -Title $ProcessName
     if ((Show-AU3WinActivate -WinHandle $winhandle) -eq 1) {
         return $True
-    } else {
+    }
+    else {
         return $False
     }
 }
 
 
 $NeedsEnter = $False
-$application = $args[0]
-$username = $args[1];
-$password = $args[2];
+if ($null -ne $args[0]) {
+    $application = $args[0]
+    $username = $args[1];
+    $password = $args[2];
+}
+else {
+    $application = "Error"
+}
+
 switch ($application) {
     TOX {
         $ProcessName = "France"
@@ -43,6 +50,11 @@ switch ($application) {
         $NeedsEnter = $True
         Break
     }
+
+    Error {
+        [System.Windows.MessageBox]::Show('Invalid Option - ER01','Error 01','OK','Error')
+        exit
+    }
     
 }
 <#
@@ -63,25 +75,26 @@ else {
         Start-Process -FilePath $filepath
     }
 }
-    for ($i = 0; $i -lt 500; $i++) {
-        Start-Sleep -Milliseconds 500
-        $winhandle = Get-AU3WinHandle -Title $ProcessName
-        $isone = Show-AU3WinActivate -WinHandle $winhandle
-        if ($isone -eq 1) {
-            if ($username -ne "") {
-                $wscript.SendKeys($username);   
-            }
-        
-            if ($password -ne "") {
-                $wscript.SendKeys($password);   
-            }
-            if ($NeedsEnter) {
-                $wscript.SendKeys("{Enter}")   
-            }
-            Break
-        } 
 
-    }
+for ($i = 0; $i -lt 500; $i++) {
+    Start-Sleep -Milliseconds 500
+    $winhandle = Get-AU3WinHandle -Title $ProcessName
+    $isone = Show-AU3WinActivate -WinHandle $winhandle
+    if ($isone -eq 1) {
+        if ($username -ne "") {
+            $wscript.SendKeys($username);   
+        }
+        
+        if ($password -ne "") {
+            $wscript.SendKeys($password);   
+        }
+        if ($NeedsEnter) {
+            $wscript.SendKeys("{Enter}")   
+        }
+        Break
+    } 
+
+}
      
     
 
