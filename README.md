@@ -8,6 +8,8 @@ yes.
 run Setup.ps1 in Powershell
 add DAMN.ps1 to startup folder
 
+# Wiki
+for in depth explanation and documentation visit [Wiki](https://github.com/Logotrop/DAMN/wiki)
 # What it does so far
  - can log into 1password
  - can list all credentials based on customers
