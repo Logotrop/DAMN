@@ -1,5 +1,5 @@
 #requires -version 3
-
+Import-Module .\AutoItX.psd1 #Import Automation Library
 
 
 #Signin into OnePassword
@@ -44,22 +44,24 @@ $CurrentTime = Get-date #Guess What this does
 $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
 #$TimeFile = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPFT',[System.EnvironmentVariableTarget]::User)"
 
-Write-Output $Session_Token
 #Check if session exists
 if ($Session_Token -eq '' -or $Session_Token -eq ' ' -or $Session_Token -eq '0') {
     
     Write-Output "No Session Token in ENV!"
-    if (Test-Path $pwd\session.txt) { #if session file exists
+    if (Test-Path $pwd\session.txt) {
+        #if session file exists
         #Try to get Backup Session and Time from file
         $SessionFile = Get-Content -Path $pwd\session.txt -TotalCount 1 
         #$TimeFile = ((Get-Content -Path $pwd\session.txt -TotalCount 3)[-1])
         Write-Output "Session backup file exists!"
 
-        if ($SessionFile -eq '') { #If backup Session is empty -> Signin
+        if ($SessionFile -eq '') {
+            #If backup Session is empty -> Signin
             Write-Output "No Session in Backup File!"
             OPSignin
         }
-        else { #If Backup Exists -> Use it as Session token
+        else {
+            #If Backup Exists -> Use it as Session token
 
             #There should be a check for a timestamp if the session is valid
 
@@ -67,7 +69,8 @@ if ($Session_Token -eq '' -or $Session_Token -eq ' ' -or $Session_Token -eq '0')
             Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
             Write-Output "Using Session From Backup File!"
         }
-    } else {
+    }
+    else {
         Write-Output "No Session.txt backup file!"
         OPSignin #Signin and make a Backup File
         $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
@@ -77,7 +80,7 @@ if ($Session_Token -eq '' -or $Session_Token -eq ' ' -or $Session_Token -eq '0')
 else {
     Write-Output "Found Session ENV Variable!"
 }
-Write-Output($Session_Token) #Does it work?
+#Write-Output($Session_Token) #Does it work?
 #Write-Output((Get-Content -Path $pwd\session.txt -TotalCount 3)[-1]) #Is backup working?
 
 
@@ -89,10 +92,15 @@ Write-Output($Session_Token) #Does it work?
 $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
 
 #Client List
-$clients = '*Klesia*', '*Fnac*', '*GEMB*', '*MMB*', '*Swisslife*', '*Mutualized*', '*Fraikin*', '*Util*', '*Manpower*', '*Trenitalia*', '*Tsod*', '*Carefour*', '*PSA*', '*SNCF*', '*IBM*'
+$clients = '*Klesia*', '*Fnac*', '*GEMB*', '*Swisslife*Test*', '*Swisslife*Prod*', '*Mutualise*', '*Fraikin*', '*Util 1*', '*Util 2*', '*Util 3*', '*Manpower*', '*Trenitalia*', '*Tsod*', '*Carrefour*', '*PSA*', '*SNCF*', '*Notes*', '*TOX*', '*BlueZzz*','*KlesiaFMP*'
 
 #Client Array of usernames and passwords
 $Credentials = @()
+for ($i = 0; $i -lt $clients.Count; $i++) {
+    $Credentials += @(
+        [pscustomobject]@{Title='';username='';password=''}
+    )    
+}
 <#
 #Clients
 $Klesia = 
@@ -124,21 +132,24 @@ while ( $Null -eq $ArrayOfLogins) {
 }
 #Go thru all logins one by one
 foreach ($i in $ArrayOfLogins) {
-    
+    $i = $i.replace('"', "")
+    $i = $i.Replace("{", "")
+    $i = $i.replace('}', "")
     foreach ($client in $clients) {
-        #Write-Output($i)
-        $i = $i.replace('"', "")
-        $i = $i.Replace("{", "")
-        $i = $i.replace('}', "")
         if ($i -like $client ) {
-            Write-Output($client)
+            $i = $i.Replace('"',"")
             $toarray = $i.split(",")
-            foreach ($a in $toarray.Replace('"', "")) {
-                Write-Output($a)
-            }
-            Write-Output('')    
+            $toarray[0] = $toarray[0].replace('password:','')
+            $toarray[1] = $toarray[1].replace('title:','')
+            $toarray[2] = $toarray[2].replace('username:','')
+
+            $index = $clients.IndexOf($client)-1
+            $Credentials[$index] = @(
+                [pscustomobject]@{Title=$toarray[1];username=$toarray[2];password=$toarray[0]}
+            )  
         }
     }
         
         
 }
+Write-Output $Credentials

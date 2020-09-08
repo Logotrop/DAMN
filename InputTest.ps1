@@ -5,18 +5,22 @@ Import-Module .\AutoItX.psd1
 function IsOpen {
     Start-Sleep -Milliseconds 500
     $winhandle = Get-AU3WinHandle -Title $ProcessName
-    Show-AU3WinActivate -WinHandle $winhandle
+    if ((Show-AU3WinActivate -WinHandle $winhandle) -eq 1) {
+        return $True
+    } else {
+        return $False
+    }
 }
 
 
 $NeedsEnter = $False
 $application = $args[0]
+$username = $args[1];
+$password = $args[2];
 switch ($application) {
     TOX {
-        $ProcessName = "France" 
-        $username = $args[1];
-        $password = $args[2];
-        $arguments = "https://sniaccess.mop.esni.ibm.com:900 France " + $username
+        $ProcessName = "France"
+        $arguments = "https://sniaccess.mop.esni.ibm.com:900 France " + $username + " 129.39.143.218 23"
         $username = ""
         $filepath = "C:\Program Files (x86)\Toxclient\toxclient.exe"
         $NeedsEnter = $True
@@ -25,7 +29,6 @@ switch ($application) {
     
     Notes {
         $ProcessName = "IBM Notes"
-        $password = $args[1];
         $arguments = ""
         $filepath = "C:\Notes\notes.exe"
         $NeedsEnter = $True
@@ -34,7 +37,7 @@ switch ($application) {
     
     BlueZzz {
         $ProcessName = "BlueZzz login"
-        $password = $args[1];
+        $AlreadyOpen = "BlueZzz"
         $arguments = ""
         $filepath = "C:\Users\MarekDobes\Desktop\BlueZzz\"
         $NeedsEnter = $True
