@@ -1,5 +1,5 @@
 #requires -version 3
-Import-Module .\AutoItX.psd1 #Import Automation Library
+Import-Module .\AX\AutoItX.psd1 #Import Automation Library
 
 
 #Signin into OnePassword

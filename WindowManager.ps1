@@ -12,8 +12,7 @@ function IsOpen {
         return $False
     }
 }
-
-
+$WindowsUser = $env:UserName
 $NeedsEnter = $False
 if ($null -ne $args[0]) {
     $application = $args[0]
@@ -52,7 +51,7 @@ switch ($application) {
     }
 
     Error {
-        [System.Windows.MessageBox]::Show('Invalid Option - ER01','Error 01','OK','Error')
+        Invoke-Expression "[System.Windows.MessageBox]::Show('Invalid Option - Error code: 01','Error - 01','OK','Error')"
         exit
     }
     
@@ -64,7 +63,10 @@ $password=$args[2]
 #https://stackoverflow.com/questions/24286055/user-input-for-external-program-in-powershell
 $Wscript = New-Object -com wscript.shell
 if ($application -eq "BlueZzz") {
-    Invoke-Expression "cmd.exe start /B $filepath\runtime\jre\bin\javaw.exe -jar $filepath\app\bluezzz-login.jar"
+    #Invoke-Expression "cd C:\Users\"+ $WindowsUser +"\Desktop\BlueZzz"
+    #Invoke-Expression "cmd.exe start /B $filepath\runtime\jre\bin\javaw.exe -jar $filepath\app\bluezzz-login.jar"
+    Start-Process -FilePath "cd C:\Users\"+ $WindowsUser +"\Desktop\BlueZzz\BlueZzz.cmd"
+
 
 }
 else {
