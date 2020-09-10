@@ -5,8 +5,9 @@ or IBM OnePassword Integration Script
 yes.
 
 # Setup
+[Download Latest stable version](https://github.com/Logotrop/DAMN/releases)
 run Setup.ps1 in Powershell
-add DAMN.ps1 to startup folder
+add DAMN.exe shortcut to startup folder
 
 # Wiki
 for in depth explanation and documentation visit [Wiki](https://github.com/Logotrop/DAMN/wiki)
