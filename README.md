@@ -5,21 +5,23 @@ or IBM OnePassword Integration Script
 yes.
 
 # Setup
+[Download Latest stable version](https://github.com/Logotrop/DAMN/releases)
 run Setup.ps1 in Powershell
-add DAMN.ps1 to startup folder
+add DAMN.exe shortcut to startup folder
 
 # Wiki
 for in depth explanation and documentation visit [Wiki](https://github.com/Logotrop/DAMN/wiki)
+
 # What it does so far
  - can log into 1password
  - can list all credentials based on customers
  - formating of output based on tags and types of credentials
  - automatic relogin based on sessions
  - Automatic login for supported applications
+ - GUI for easy settings
+ - Binary executables for download
  
 # What I want to implement rn
- - Binary executables without AV freaking out
- - GUI for easy settings
  - Startup option (maybe even delay)
  - Reading the content of the selected window
  - Support for Sessions without the use of Macro files with plaintext passwords
