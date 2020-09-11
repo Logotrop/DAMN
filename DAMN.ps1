@@ -61,6 +61,7 @@ function OPSignin {
     }
 }
 
+# Function to find wether a specific login windo
 function IsOpen {
     Start-Sleep -Milliseconds 500
     $winhandle = Get-AU3WinHandle -Title $ProcessName
