@@ -1,0 +1,50 @@
+[PCOMM SCRIPT HEADER]
+LANGUAGE=VBSCRIPT
+DESCRIPTION=
+[PCOMM SCRIPT SOURCE]
+OPTION EXPLICIT
+autECLSession.SetConnectionByName(ThisSessionName)
+
+dim filesys, demofolder, filetxt , counter, control, myNAME, myPASSWORD
+dim objShell, objFSO, objFile, CurrentDayOfYear, TwoDaysBeforeCurrentDay, CurrentYear
+dim TwoLastDigitsOfCurrentYear, Var2, check, x, ThreeDaysBeforeCurrentDay, Var3
+dim check_under_42_var, specific_check_output_a, Check_Error
+dim check_under_42_b_1, check_under_42_b_2, check_under_42_b_3, specific_check_output_b
+dim Check_Error_PELEH, Check_Error_PELEG, OneDayBeforeCurrentDay, Var1
+
+Set objShell = CreateObject ("Wscript.shell")
+Const ForReading = 1
+
+REM This will use a variable to store the current path.Next line will delete the text if it exists
+Dim sCurPath
+sCurPath = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName("..")
+
+REM Creating file object that will read the specified file
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set objFile = objFSO.OpenTextFile(sCurPath+"\Variables.txt", ForReading)
+myNAME = objFile.ReadLine
+myPASSWORD = objFile.ReadLine
+objFile.Close
+
+autECLSession.autECLOIA.WaitForAppAvailable
+
+autECLSession.autECLOIA.WaitForInputReady
+autECLSession.autECLPS.WaitForCursor 23,10,10000
+autECLSession.autECLPS.SendKeys "peleh"
+autECLSession.autECLOIA.WaitForInputReady
+autECLSession.autECLPS.SendKeys "[enter]"
+autECLSession.autECLPS.WaitForAttrib 1,1,"28","3c",3,10000
+autECLSession.autECLPS.Wait 2000
+autECLSession.autECLOIA.WaitForAppAvailable
+autECLSession.autECLOIA.WaitForInputReady
+autECLSession.autECLPS.SendKeys "[enter]"
+autECLSession.autECLOIA.WaitForInputReady
+autECLSession.autECLPS.WaitForCursor 09,43,10000
+autECLSession.autECLPS.SendKeys myNAME
+autECLSession.autECLPS.SendKeys "[tab]"
+autECLSession.autECLPS.SendKeys myPASSWORD
+autECLSession.autECLPS.SendKeys "[enter]"
+autECLSession.autECLOIA.WaitForAppAvailable
+autECLSession.autECLOIA.WaitForInputReady
+autECLSession.autECLPS.SendKeys "1.3"
+autECLSession.autECLPS.SendKeys "[enter]"

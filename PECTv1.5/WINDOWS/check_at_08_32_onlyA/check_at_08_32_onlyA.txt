@@ -1,0 +1,73 @@
+40: EX01 PELA5 1.3 Flux xxxx en status A
+No flux in the specified status
+41: EX01 PELCD 1.3 Flux xxxx en status A
+No flux in the specified status
+42: EX01 PELE1 1.3 Flux xxxx en status A
+No flux in the specified status
+43: EX01 PELIS 1.3 Flux xxxx en statut A
+   SBOS4005 242 04211345 1        0213 R A SLIC     00000010 01            
+   SBOS6606 242 04204305 1        0213 R A SLIC     00000017 01            
+   SBOS6647 242 04204293 1        0213 R A SLIC     00000003 01            
+   SBOS7547 242 04207513 1        0213 R A SLIC     00000003 01            
+   SBOS7595 241 04106480 1        0213 R A SLIC     00000038 01            
+   SBOS7632 243 09504181 1        0213 R A SLIC     00000015 01            
+   SBOS7758 243 04306185 1        0213 R A SLIC     00000008 01            
+   SBOS7979 241 04108582 1        0213 R A SLIC     00000003 01            
+   SBOS7995 242 04207244 1        0213 R A SLIC     00000010 01            
+   SBOS8096 241 04104284 1        0213 R A SLIC     00000010 01            
+   SBOS8228 241 04104270 1        0213 R A SLIC     00000038 01            
+   SBOS8250 242 04204261 1        0213 R A SLIC     00000015 01            
+   SBOS8283 242 04204272 1        0213 R A SLIC     00000003 01            
+   SBOS8285 243 04306150 1        0213 R A SLIC     00000008 01            
+   SBOS8359 241 04104263 1        0213 R A SLIC     00000003 01            
+   SBOS8359 241 04104263 1        0213 R A SLIC     00000003 01            
+   SBOS8371 242 04204320 1        0213 R A SLIC     00000003 01            
+   SBOS8403 243 04304275 1        0213 R A SLIC     00000137 01            
+   SBOS8407 243 04304311 1        0213 R A SLIC     00000137 01            
+   SBOS8418 243 04304273 1        0213 R A SLIC     00000036 01            
+   SBOS8468 241 04104423 1        0213 R A SLIC     00000047 01            
+   SBOS8515 242 04204240 1        0213 R A SLIC     00000024 01            
+   SBOS8543 243 04304272 1        0213 R A SLIC     00000038 01            
+   SBOS8546 242 04204253 1        0213 R A SLIC     00000008 01            
+   SBOS8558 242 04205080 1        0213 R A SLIC     00000019 01            
+   SBOS8594 242 04204283 1        0213 R A SLIC     00000010 01            
+   SBOS8612 243 04304265 1        0213 R A SLIC     00000019 01            
+   SBOS8838 242 04204280 1        0213 R A SLIC     00000003 01            
+   SBOS9403 242 04204262 1        0213 R A SLIC     00000008 01            
+                                                                           
+44: CT01 PELB2 1.3 Flux xxxx en statut A
+   SUPBDB01 242 00083648 1 90600 20299 E A MAP01    00000002 10            
+   SUPBDB01 242 00083649 1 90600 20299 E A BCP36    00790742 10            
+   SUPBDB01 242 00083650 1 90600 20299 E A BCP36    00000144 10            
+   SUPBDB01 242 00083651 1 90600 20299 E A BCP36    00142446 10            
+   SUPBDB01 242 00083652 1 90600 20299 E A BCP36    00054935 10            
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+45: EX01 PELM6 1.3 Flux xxxx en statut A
+No flux in the specified status
+PELEH: EX02 PELEH 1.3 Flux xxxx en statut A
+   SBOH0020 242 04204362 1        0213 R A SLIC     00000008 01            
+   SBOH0026 243 04304031 1        0213 R A SLIC     00000012 01            
+   SBOH0029 242 04204025 1        0213 R A SLIC     00000005 01            
+   SBOH0158 242 04209251 1        0213 R A SLIC     00000076 01            
+   SBOH0165 241 04109031 1        0213 R A SLIC     00000031 01            
+   SBOH0348 243 04304055 1        0213 R A SLIC     00000010 01            
+   SBOH0678 243 04304063 1        0213 R A SLIC     00000008 01            
+   SBOH7512 241 04109180 1        0213 R A SLIC     00000249 01            
+   SBOH8171 241 04109030 1        0213 R A SLIC     00000026 01            
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+PELEG: EX02 PELEG 1.3 Flux xxxx en statut A
+No flux in the specified status

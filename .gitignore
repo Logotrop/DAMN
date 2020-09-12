@@ -228,3 +228,8 @@ BlueZzz/runtime/jre/lib/security/local_policy.jar
 BlueZzz/runtime/jre/lib/security/trusted.libraries
 BlueZzz/runtime/jre/lib/security/US_export_policy.jar
 DAMN.exe
+BlueZzz/app/bluezzz-core.jar
+logs/a
+logs/BlueZzz.log
+PECTv1.5/WINDOWS/Variables.txt
+logs

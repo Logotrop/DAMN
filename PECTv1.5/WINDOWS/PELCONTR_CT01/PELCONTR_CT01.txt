@@ -1,0 +1,50 @@
+44: CT01 PELB2 1.3 Flux xxxx en statut A
+   SUPBDB01 254 00083848 1 90600 20299 E A MAP01    00000002 10            
+   SUPBDB01 254 00083849 1 90600 20299 E A BCP36    00801031 10            
+   SUPBDB01 254 00083850 1 90600 20299 E A BCP36    00000144 10            
+   SUPBDB01 254 00083851 1 90600 20299 E A BCP36    00145394 10            
+   SUPBDB01 254 00083852 1 90600 20299 E A BCP36    00055344 10            
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+44: CT01 PELB2 1.3 Flux xxxx en statut 9
+   FRHDV1   253 00020121 1             E 9 BCPO5    00000394               
+   FRHDV1   253 00020122 1             E 9 BCPO5    00000394               
+   FRHDV1   253 00020123 1             E 9 BCPO5    00000067               
+   FRHDV1   253 00020124 1             E 9 BCPO5    00000067               
+   FRHDV1   254 00020125 1             E 9 BCPO5    00000394               
+   FRHDV1   254 00020126 1             E 9 BCPO5    00000394               
+   FRHDV1   254 00020127 1             E 9 BCPO5    00000067               
+   FRHDV1   254 00020128 1             E 9 BCPO5    00000067               
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+44: CT01 PELB2 1.1 Flux xxxx en statut A
+No flux in the specified status
+44: CT01 PELB2 1.1 Flux xxxx en statut 9
+  SOGEDIAL  254 A14486 BCPF      J254.A14486     E 9               37633 **
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
