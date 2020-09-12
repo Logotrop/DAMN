@@ -1,0 +1,87 @@
+[PCOMM SCRIPT HEADER]
+LANGUAGE=VBSCRIPT
+DESCRIPTION=
+[PCOMM SCRIPT SOURCE]
+OPTION EXPLICIT
+autECLSession.SetConnectionByName(ThisSessionName)
+
+Dim objShell, sCurPath, objFSO, objFile, myNAME, myPASSWORD, Check_Error
+
+
+Set objShell = CreateObject ("Wscript.shell")
+Const ForReading = 1
+
+REM This will use a variable to store the current path.Next line will delete the text if it exists
+
+sCurPath = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName("..")
+
+REM Creating file object that will read the specified file
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set objFile = objFSO.OpenTextFile(sCurPath+"\Variables.txt", ForReading)
+myNAME = objFile.ReadLine
+myPASSWORD = objFile.ReadLine
+objFile.Close
+
+
+REM This line calls the macro subroutine
+subSub1_
+
+sub subSub1_()
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "tsad2"
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   
+   autECLSession.autECLPS.WaitForAttrib 15,28,"00","3c",3,10000
+
+   autECLSession.autECLPS.WaitForCursor 15,29,10000
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys myNAME
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[tab]"
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys myPASSWORD
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   autECLSession.autECLOIA.WaitForAppAvailable
+   autECLSession.autECLOIA.WaitForInputReady
+   Check_Error=autECLSession.autECLPS.GetText(23, 02, 3)
+   if Check_Error="DSI" Then
+        msgbox "Problem with your Account.The script will end"
+        exit sub
+   end if
+   
+   autECLSession.autECLPS.WaitForAttrib 21,80,"00","3c",3,10000
+
+   autECLSession.autECLPS.Wait 6750 
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   
+   autECLSession.autECLPS.WaitForAttrib 21,80,"00","3c",3,10000
+
+   autECLSession.autECLPS.Wait 3141 
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   
+   autECLSession.autECLPS.WaitForAttrib 5,2,"04","3c",3,10000
+
+   autECLSession.autECLPS.WaitForCursor 5,3,10000
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "1"
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+end sub

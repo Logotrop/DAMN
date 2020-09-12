@@ -3,6 +3,22 @@ Import-Module .\AX\AutoItX.psd1 #Import Automation Library
 $MasterPassword = ""
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
+
+
+
+
+#Make Tray Icon
+$SystrayLauncher = New-Object System.Windows.Forms.NotifyIcon
+$SystrayLauncher.Icon = ($pwd).path + "\icon.ico"
+$SystrayLauncher.Text = "DAMN"
+$SystrayLauncher.Visible = $true
+
+
+
+
+
+
+
 #Signin into OnePassword
 function OPSignin {
     $form = New-Object System.Windows.Forms.Form
@@ -73,8 +89,9 @@ function IsOpen {
     }
 }
 
+# Function for opening applications and passing input to specific window
 function WindowManager {
-    
+    #get arguments
     $NeedsEnter = $False
     if ($null -ne $args[0]) {
         $application = $args[0]
@@ -85,12 +102,17 @@ function WindowManager {
         $application = "Error"
     }
 
+    #Select application
     switch ($application) {
         TOX {
+            #Window name
             $ProcessName = "France"
+            #Start with arguments
             $arguments = "https://sniaccess.mop.esni.ibm.com:900 France " + $username + " 129.39.143.218 23"
             $username = ""
+            #path to application
             $filepath = "C:\Program Files (x86)\Toxclient\toxclient.exe"
+            #press enter after passing input
             $NeedsEnter = $True
             Break
         }
@@ -105,10 +127,16 @@ function WindowManager {
     
         BlueZzz {
             $ProcessName = "BlueZzz Login"
-            $AlreadyOpen = "BlueZzz"
             $arguments = ""
-            $filepath = "C:\Users\MarekDobes\Desktop\BlueZzz\"
+            $filepath = ($pwd).path + "\BlueZzz\"
             $NeedsEnter = $True
+            Break
+        }
+
+        PECT {
+            $ProcessName = "PECT Windows"
+            $filepath = ($pwd).Path + "\PECTv1.5\PECT_Win.pyw"
+            $NeedsEnter = $false
             Break
         }
 
@@ -118,13 +146,19 @@ function WindowManager {
         }
     
     }
-    <#
-$username=$args[1]
-$password=$args[2]
-#>
-    #https://stackoverflow.com/questions/24286055/user-input-for-external-program-in-powershell
+
+    #WS is a script for passing input
     $Wscript = New-Object -com wscript.shell
-    if ($application -eq "BlueZzz") {
+    
+    if ($application -eq "PECT") {
+        Invoke-Expression "cd PECTv1.5"
+        $PectPath = ".\PECT_Win.pyw"
+        Start-Process $PectPath
+        Invoke-Expression "cd .."
+
+    }
+    #BlueZzz needs to be in folder
+    elseif ($application -eq "BlueZzz") {
         Invoke-Expression "cd Bluezzz"
         $bluezzpath = ".\BlueZzzStart.cmd"
         Start-Process $bluezzpath
@@ -132,7 +166,8 @@ $password=$args[2]
 
     }
     else {
-        if ($arguments -ne "") {
+        #for all other is this general script
+        if ($null -ne $arguments) {
             Start-Process -FilePath $filepath -Argumentlist $arguments;
         }
         else {
@@ -140,35 +175,31 @@ $password=$args[2]
         }
     }
 
+    #Waits up to 30 seconds for a window to pass input to
     for ($i = 0; $i -lt 60; $i++) {
         Start-Sleep -Milliseconds 500
-        Write-Output "Pass $i "
-        Write-Output $username
-        Write-Output $password
-        Write-Output $ProcessName
+        #Get ID of Process from Window name
         $winhandle = Get-AU3WinHandle -Title $ProcessName
+        # 1 = Window Open 0 = Not Open, also selects it
         $isone = Show-AU3WinActivate -WinHandle $winhandle
         if ($isone -eq 1) {
-            Write-Output "Its Open"
             if ($username -ne "") {
                 $wscript.SendKeys($username);   
             }
-        
             if ($password -ne "") {
                 $wscript.SendKeys($password);   
             }
             if ($NeedsEnter) {
                 $wscript.SendKeys("{Enter}")   
             }
+            #Breaks the loop if input passed
             Break
-        }
-        else {
-            Write-Output "Waiting for app to open"
         }
 
     }
 }
 
+# Setup of required stuff if not already installed.
 if (!(Test-Path $pwd\Op\op.exe)) {
     Write-Output "OnePassword CLI Tool not found! Trying to istall it for you!"
     #OnePassword CLI tool instalation if not installed
@@ -179,6 +210,7 @@ if (!(Test-Path $pwd\Op\op.exe)) {
     Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST',' ',[System.EnvironmentVariableTarget]::User)"
     Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF',' ',[System.EnvironmentVariableTarget]::User)"
 }
+#path for OP
 [String]$OPDIR = "$pwd\Op\op.exe"
 
 
@@ -223,11 +255,10 @@ else {
 #List all Logins 
 $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
 
-#Client List   1           2         3              4                    5               6              7           8
-#$clients = '*Klesia*', '*Fnac*', '*GEMB*', '*Swisslife*Test*', '*Swisslife*Prod*', '*Mutualise*', '*Fraikin*', '*Util 1*', '*Util 2*', '*Util 3*', '*Manpower*', '*Trenitalia*', '*Tsod*', '*Carrefour*', '*PSA*', '*SNCF*', '*Notes*', '*TOX*', '*BlueZzz*', '*KlesiaFMP*', 'IBM'
-
 #Client Array of usernames and passwords
 $Credentials = @()
+
+#Obsolete
 <#function Credentialsarray {
     for ($i = 0; $i -lt $ArrayOfLogins.Count; $i++) {
         $Credentials += @(
@@ -236,41 +267,87 @@ $Credentials = @()
     }
 }
 #>
-$ArrayOfLogins = Invoke-Expression $allLogins #Get all logins from OnePassword
 
-while ( $Null -eq $ArrayOfLogins) {
-    OPSignin
+#Define Progress bar Form
+$LoadingForm = New-Object System.Windows.Forms.Form
+$LoadingForm.Text = "Getting Passwords from 1Password"
+$LoadingForm.Size = New-Object System.Drawing.Size(500, 100)
+$LoadingForm.StartPosition = "CenterScreen"
+
+# define Progress Bar
+$LoadingBar = New-Object System.Windows.Forms.ProgressBar
+$LoadingBar.Size = New-Object System.Drawing.Size(480, 20)
+$LoadingBar.Location = New-Object System.Drawing.Point(5, 10)
+$LoadingBar.Maximum = 50
+$LoadingBar.Step = 1
+$LoadingForm.Controls.Add($LoadingBar)
+
+#Make Progress bar Visible but not interactable
+$LoadingForm.Visible = $true
+
+# Start logging in on another thread
+$LoginsJob = Start-job -ScriptBlock {
     $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
     $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
-    $ArrayOfLogins = Invoke-Expression $allLogins
+    Write-Output (Invoke-Expression $allLogins) }
+#Increase Progress While the job is running
+while ($LoginsJob.State -ne "Completed") {
+    Start-Sleep -Milliseconds 500
+    $LoadingBar.PerformStep()
 }
-#Go thru all logins one by one
+#Get result of the job - Loging in
+$ArrayOfLogins = Receive-Job $LoginsJob
+if ($LoginsJob.State -eq "Completed") {
+    #Failsafe for correct input later
+    while ( $Null -eq $ArrayOfLogins) {
+        #Reset Progressbar
+        $LoadingBar.Value = 0
+        OPSignin
+        
+        $LoginsJob = Start-job -ScriptBlock {
+            $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+            $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
+            Write-Output (Invoke-Expression $allLogins) } 
+        while ($LoginsJob.State -ne "Completed") {
+            Start-Sleep -Milliseconds 500
+            $LoadingBar.PerformStep()
+            Get-Job
+        }
+        $ArrayOfLogins = Receive-Job $LoginsJob
+    }
+    #Set max progress to number of logins
+    $LoadingBar.Maximum = $ArrayOfLogins.count
 
-foreach ($i in $ArrayOfLogins) {
-    
-    $i = $i.replace('"', "")
-    $i = $i.Replace("{", "")
-    $i = $i.replace('}', "")
-    #foreach ($client in $clients) {
-    #if ($i -like $client ) {
-    $toarray = $i.split(",")
-    $toarray[0] = $toarray[0].replace('password:', '')
-    $toarray[1] = $toarray[1].replace('title:', '')
-    $toarray[2] = $toarray[2].replace('username:', '')
-    #$index = $clients.IndexOf($client) - 1
-    $Credentials += @(
-        [pscustomobject]@{Title = $toarray[1]; username = $toarray[2]; password = $toarray[0] }
-    )  
-    #}
-    #}
+    #Go thru all logins one by one
+    foreach ($i in $ArrayOfLogins) {
+        #Formatting of Output
+        $i = $i.replace('"', "")
+        $i = $i.Replace("{", "")
+        $i = $i.replace('}', "")
+        #make each an array
+        $toarray = $i.split(",")
+        $toarray[0] = $toarray[0].replace('password:', '')
+        $toarray[1] = $toarray[1].replace('title:', '')
+        $toarray[2] = $toarray[2].replace('username:', '')
+        # Add another entry to Credentials 
+        $Credentials += @(
+            [pscustomobject]@{Title = $toarray[1]; username = $toarray[2]; password = $toarray[0] }
+        )
         
         
+    }
+    #Close Progress bar
+    $LoadingForm.Close()
 }
+
+
+
 # Create Window
 $Mainform = New-Object System.Windows.forms.Form
-$Mainform.Text = 'DAMN - Applications'
+$Mainform.Text = 'DAMN'
 $Mainform.Size = New-Object System.Drawing.Size(300, 600)
 $Mainform.StartPosition = 'CenterScreen'
+$Mainform.FormBorderStyle = "FixedDialog"
 # Create IBM Notes Button
 $IBMnotesButton = New-Object System.Windows.Forms.Button
 $IBMnotesButton.Location = New-Object System.Drawing.Point(5, 30)
@@ -286,12 +363,12 @@ if (Test-Path "C:\Program Files (x86)\Toxclient") {
     $ToxButton.Text = 'TOX'
     $Mainform.AcceptButton = $ToxButton
     $Mainform.Controls.Add($ToxButton)
-} else {
+}
+else {
     [System.Windows.Forms.MessageBox]::Show( "Path to tox not found!" , "TOX Not Found")
 }
+# Create BlueZzz Button
 $BlueZzzPath = ($pwd).Path + "\BlueZzz"
-Write-Output $BlueZzzPath
-Write-Output (Test-Path $BlueZzzPath)
 if (Test-Path $BlueZzzPath) {
     $BlueZzzButton = New-Object System.Windows.Forms.Button
     $BlueZzzButton.Location = New-Object System.Drawing.Point(5, 120)
@@ -299,6 +376,29 @@ if (Test-Path $BlueZzzPath) {
     $BlueZzzButton.Text = 'BlueZzz'
     $Mainform.AcceptButton = $BlueZzzButton
     $Mainform.Controls.Add($BlueZzzButton)
+}
+else {
+    [System.Windows.Forms.MessageBox]::Show( "Please copy BlueZzz Folder To this Folder" , "BlueZzz Not Found")
+}
+
+# Create PECT Button
+$PectPath = ($pwd).Path + "\PECTv1.5"
+if (Test-Path $PectPath) {
+    #Not safe Label
+    $Pectlabel = New-Object System.Windows.Forms.Label
+    $Pectlabel.Location = New-Object System.Drawing.Point(5, 165)
+    $Pectlabel.Size = New-Object System.Drawing.Size(280, 15)
+    $Pectlabel.Text = "! Not Secure !"
+    $Mainform.Controls.Add($Pectlabel)
+
+
+    # PECT Button
+    $PectButton = New-Object System.Windows.Forms.Button
+    $PectButton.Location = New-Object System.Drawing.Point(5, 180)
+    $PectButton.Size = New-Object System.Drawing.Size(150, 40)
+    $PectButton.Text = 'PECT'
+    $Mainform.AcceptButton = $PectButton
+    $Mainform.Controls.Add($PectButton)
 }
 else {
     [System.Windows.Forms.MessageBox]::Show( "Please copy BlueZzz Folder To this Folder" , "BlueZzz Not Found")
@@ -312,7 +412,7 @@ $label.Size = New-Object System.Drawing.Size(280, 20)
 $label.Text = 'Choose App to logon to:'
 $Mainform.Controls.Add($label)
 
-$Mainform.Topmost = $true
+
 
 # Event Handeling - Button Click
 # Add Button event 
@@ -338,6 +438,17 @@ if (Test-Path $BlueZzzPath) {
             $i = $Credentials.title.IndexOf("IBM")
             #[System.Windows.Forms.MessageBox]::Show( $Credentials[$i].title + " " + $Credentials[$i].username + " " + $Credentials[$i].password , "IBM Notes Credentials")
             WindowManager "BlueZzz" $Credentials[$i].password
+        }
+    )
+}
+if (Test-Path $PectPath) {
+    $PectButton.Add_Click(
+        {    
+            $i = $Credentials.title.IndexOf("Carrefour")
+            #[System.Windows.Forms.MessageBox]::Show( $Credentials[$i].title + " " + $Credentials[$i].username + " " + $Credentials[$i].password , "IBM Notes Credentials")
+            Out-File -FilePath $pwd\PECTv1.5\WINDOWS\Variables.txt -Encoding ASCII -InputObject $Credentials[$i].username
+            Out-File -Append $pwd\PECTv1.5\WINDOWS\Variables.txt -Encoding ASCII -InputObject $Credentials[$i].password
+            WindowManager "PECT"
         }
     )
 }

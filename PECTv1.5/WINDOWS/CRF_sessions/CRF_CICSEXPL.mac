@@ -1,0 +1,77 @@
+[PCOMM SCRIPT HEADER]
+LANGUAGE=VBSCRIPT
+DESCRIPTION=
+[PCOMM SCRIPT SOURCE]
+OPTION EXPLICIT
+autECLSession.SetConnectionByName(ThisSessionName)
+Dim objShell, sCurPath, objFSO, objFile, myNAME, myPASSWORD, Check_Error
+
+
+Set objShell = CreateObject ("Wscript.shell")
+Const ForReading = 1
+
+REM This will use a variable to store the current path.Next line will delete the text if it exists
+
+sCurPath = CreateObject("Scripting.FileSystemObject").GetAbsolutePathName("..")
+
+REM Creating file object that will read the specified file
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set objFile = objFSO.OpenTextFile(sCurPath+"\Variables.txt", ForReading)
+myNAME = objFile.ReadLine
+myPASSWORD = objFile.ReadLine
+objFile.Close
+REM This line calls the macro subroutine
+subSub1_
+
+sub subSub1_()
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "cicsexpl"
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   
+   autECLSession.autECLPS.WaitForAttrib 1,1,"38","3c",3,10000
+
+   autECLSession.autECLPS.Wait 3750 
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   
+   autECLSession.autECLPS.WaitForAttrib 19,16,"00","3c",3,10000
+
+   autECLSession.autECLPS.WaitForCursor 19,17,10000
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys myNAME
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[tab]"
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys myPASSWORD
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   
+   autECLSession.autECLPS.WaitForAttrib 22,9,"00","3c",3,10000
+
+   autECLSession.autECLPS.WaitForCursor 22,10,10000
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "yq0010"
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+   
+   autECLSession.autECLPS.WaitForAttrib 23,10,"00","3c",3,10000
+
+   autECLSession.autECLPS.Wait 2485 
+
+   autECLSession.autECLOIA.WaitForAppAvailable
+   
+   autECLSession.autECLOIA.WaitForInputReady
+   autECLSession.autECLPS.SendKeys "[enter]"
+end sub

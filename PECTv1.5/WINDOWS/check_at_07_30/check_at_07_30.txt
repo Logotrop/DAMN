@@ -1,0 +1,153 @@
+40: EX01 PELA5 1.3 Flux xxxx en status AD167
+   SBOS1462 244 00005742 1       20204 E A SL24     00000115 02            
+   SBOS7589 244 04501113 1             R 7 BLIR     00000003 01            
+   SBOS7609 244 04500013 1             R 7 BLIR     00000003 01            
+   SBOS7612 244 04501103 1             R 7 BLIR     00000003 01            
+   SBOS7753 244 04501073 1             R 7 BLIR     00000003 01            
+   SBOS7779 244 04500373 1             R 7 BLIR     00000003 01            
+   SBOS7780 244 04500223 1             R 7 BLIR     00000003 01            
+   SBOS7787 244 04500233 1             R 7 BLIR     00000003 01            
+   SBOS7810 244 04500453 1             R 7 BLIR     00000003 01            
+   SBOS7820 244 04500023 1             R 7 BLIR     00000003 01            
+   SBOS7822 244 04500023 1             R 7 BLIR     00000003 01            
+   SBOS8032 244 04500243 1             R 7 BLIR     00000003 01            
+   SBOS8037 244 04500003 1             R 7 BLIR     00000003 01            
+   SBOS8053 244 09613193 1             R 7 BLIR     00000003 01            
+   SBOS8056 244 04501063 1             R 7 BLIR     00000003 01            
+   SBOS8056 244 04501063 1             R 7 BLIR     00000003 01            
+   SBOS8095 244 04501093 1             R 7 BLIR     00000003 01            
+   SBOS8143 244 04500013 1             R 7 BLIR     00000003 01            
+   SBOS8147 244 04500333 1             R 7 BLIR     00000003 01            
+   SBOS8190 244 04423192 1             R 7 BLIR     00000003 01            
+   SBOS8190 244 04423193 1             R 7 BLIR     00000003 01            
+   SBOS8581 244 04422053 1             R 7 BLIR     00000003 01            
+   SBOS8587 244 04423593 1             R 7 BLIR     00000003 01            
+   SBOS8622 244 04500443 1             R 7 BLIR     00000003 01            
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+40: EX01 PELA5 1.3 Flux xxxx en status 9
+No flux in the specified status
+41: EX01 PELCD 1.3 Flux xxxx en status AD167
+No flux in the specified status
+41: EX01 PELCD 1.3 Flux xxxx en status 9
+No flux in the specified status
+42: EX01 PELE1 1.3 Flux xxxx en status AD167
+No flux in the specified status
+42: EX01 PELE1 1.3 Flux xxxx en status 9
+No flux in the specified status
+43: EX01 PELIS 1.3 Flux xxxx en statut AD167
+   SBOS4005 242 04211345 1        0213 R A SLIC     00000010 01            
+   SBOS6606 242 04204305 1        0213 R A SLIC     00000017 01            
+   SBOS6647 242 04204293 1        0213 R A SLIC     00000003 01            
+   SBOS7547 242 04207513 1        0213 R A SLIC     00000003 01            
+   SBOS7595 244 04404283 1        0213 R A SLIC     00000003 01            
+   SBOS7632 243 09504181 1        0213 R A SLIC     00000015 01            
+   SBOS7758 243 04306185 1        0213 R A SLIC     00000008 01            
+   SBOS7995 242 04207244 1        0213 R A SLIC     00000010 01            
+   SBOS8250 242 04204261 1        0213 R A SLIC     00000015 01            
+   SBOS8283 242 04204272 1        0213 R A SLIC     00000003 01            
+   SBOS8285 243 04306150 1        0213 R A SLIC     00000008 01            
+   SBOS8371 242 04204320 1        0213 R A SLIC     00000003 01            
+   SBOS8403 243 04304275 1        0213 R A SLIC     00000137 01            
+   SBOS8407 243 04304311 1        0213 R A SLIC     00000137 01            
+   SBOS8418 243 04304273 1        0213 R A SLIC     00000036 01            
+   SBOS8418 243 04304273 1        0213 R A SLIC     00000036 01            
+   SBOS8515 242 04204240 1        0213 R A SLIC     00000024 01            
+   SBOS8543 243 04304272 1        0213 R A SLIC     00000038 01            
+   SBOS8546 242 04204253 1        0213 R A SLIC     00000008 01            
+   SBOS8558 242 04205080 1        0213 R A SLIC     00000019 01            
+   SBOS8594 242 04204283 1        0213 R A SLIC     00000010 01            
+   SBOS8598 244 04404285 1        0213 R A SLIC     00000003 01            
+   SBOS8612 243 04304265 1        0213 R A SLIC     00000019 01            
+   SBOS8838 242 04204280 1        0213 R A SLIC     00000003 01            
+   SBOS9403 242 04204262 1        0213 R A SLIC     00000008 01            
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+43: EX01 PELIS 1.3 Flux xxxx en statut 9
+No flux in the specified status
+44: CT01 PELB2 1.3 Flux xxxx en statut AD167
+   SUPBDB01 244 00083670 1 90600 20299 E A MAP01    00000002 10            
+   SUPBDB01 244 00083671 1 90600 20299 E A BCP36    00793030 10            
+   SUPBDB01 244 00083672 1 90600 20299 E A BCP36    00000144 10            
+   SUPBDB01 244 00083673 1 90600 20299 E A BCP36    00142579 10            
+   SUPBDB01 244 00083674 1 90600 20299 E A BCP36    00055025 10            
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+44: CT01 PELB2 1.3 Flux xxxx en statut 9
+   FRHDV1   241 00020073 1             E 9 BCPO5    00000394               
+   FRHDV1   241 00020074 1             E 9 BCPO5    00000394               
+   FRHDV1   241 00020075 1             E 9 BCPO5    00000067               
+   FRHDV1   241 00020076 1             E 9 BCPO5    00000067               
+   FRHDV1   242 00020077 1             E 9 BCPO5    00000394               
+   FRHDV1   242 00020078 1             E 9 BCPO5    00000394               
+   FRHDV1   242 00020079 1             E 9 BCPO5    00000067               
+   FRHDV1   242 00020080 1             E 9 BCPO5    00000067               
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+                                                                           
+44: CT01 PELB2 1.1 Flux xxxx en statut A
+No flux in the specified status
+44: CT01 PELB2 1.1 Flux xxxx en statut 9
+No flux in the specified status
+45: EX01 PELM6 1.3 Flux xxxx en statut AD167
+No flux in the specified status
+45: EX01 PELM6 1.3 Flux xxxx en statut 9
+No flux in the specified status
+PELEH: EX02 PELEH 1.3 Flux xxxx en statut AD167
+   SBOH0020 244 04500460 1             R 7 BLIR     00000003 01            
+   SBOH0021 244 04501073 1             R 7 BLIR     00000003 01            
+   SBOH0021 244 04501074 1             R 7 BLIR     00000003 01            
+   SBOH0022 244 04500433 1             R 7 BLIR     00000003 01            
+   SBOH0025 244 04501213 1             R 7 BLIR     00000003 01            
+   SBOH0025 244 04501214 1             R 7 BLIR     00000003 01            
+   SBOH0026 243 04304031 1        0213 R A SLIC     00000012 01            
+   SBOH0056 244 04501050 1             R 7 BLIR     00000003 01            
+   SBOH0059 244 04501051 1             R 7 BLIR     00000003 01            
+   SBOH0059 244 04501053 1             R 7 BLIR     00000003 01            
+   SBOH0069 244 04501024 1             R 7 BLIR     00000003 01            
+   SBOH0080 244 04501063 1             R 7 BLIR     00000003 01            
+   SBOH0080 244 04501065 1             R 7 BLIR     00000003 01            
+   SBOH0086 244 04501054 1             R 7 BLIR     00000003 01            
+   SBOH0327 244 04501042 1             R 7 BLIR     00000003 01            
+   SBOH0327 244 04501042 1             R 7 BLIR     00000003 01            
+   SBOH0327 244 04501045 1             R 7 BLIR     00000003 01            
+   SBOH0348 243 04304055 1        0213 R A SLIC     00000010 01            
+   SBOH0538 244 04404032 1        0213 R A SLIC     00000005 01            
+   SBOH0678 243 04304063 1        0213 R A SLIC     00000008 01            
+   SBOH7334 244 04500214 1             R 7 BLIR     00000003 01            
+   SBOH7350 244 04422054 1             R 7 BLIR     00000003 01            
+   SBOH7350 244 04422060 1             R 6 BLIR     00000005 01            
+   SBOH7357 244 04422063 1             R 6 BLIR     00000005 01            
+   SBOH7357 244 04422065 1             R 6 BLIR     00000005 01            
+   SBOH7421 244 04404320 1        0213 R A SLIC     00000008 01            
+   SBOH7429 244 04501064 1             R 7 BLIR     00000003 01            
+                                                                           
+                                                                           
+                                                                           
+PELEH: EX02 PELEH 1.3 Flux xxxx en statut 9
+No flux in the specified status
+PELEG: EX02 PELEG 1.3 Flux xxxx en statut AD167
+No flux in the specified status
+PELEG: EX02 PELEG 1.3 Flux xxxx en statut 9
+No flux in the specified status
+First part of specific check in 42 is OK
+Second part of specific check in 42 is OK
