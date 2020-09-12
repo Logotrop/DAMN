@@ -276,7 +276,7 @@ $LoadingForm.StartPosition = "CenterScreen"
 
 # define Progress Bar
 $LoadingBar = New-Object System.Windows.Forms.ProgressBar
-$LoadingBar.Size = New-Object System.Drawing.Size(480, 20)
+$LoadingBar.Size = New-Object System.Drawing.Size(475, 20)
 $LoadingBar.Location = New-Object System.Drawing.Point(5, 10)
 $LoadingBar.Maximum = 50
 $LoadingBar.Step = 1
