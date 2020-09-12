@@ -20,12 +20,13 @@ for in depth explanation and documentation visit [Wiki](https://github.com/Logot
  - Automatic login for supported applications
  - GUI for easy settings
  - Binary executables for download
+ - PECT Support   *Not Safe !*
+ - Multi Threaded optimization
  
 # What I want to implement rn
  - Startup option (maybe even delay)
  - Reading the content of the selected window
  - Support for Sessions without the use of Macro files with plaintext passwords
- - PECT integration
  - Selected Website support
  
  
