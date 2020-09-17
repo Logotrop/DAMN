@@ -140,6 +140,12 @@ function WindowManager {
             Break
         }
 
+        Master {
+            $ProcessName = "Unlock"
+            $filepath = "C:\Users\"+$env:USERNAME +"\AppData\Local\1Password\app\7\1Password.exe"
+            $NeedsEnter = $True
+        }
+
         Error {
             Invoke-Expression "[System.Windows.MessageBox]::Show('Invalid Option - Error code: 01','Error - 01','OK','Error')"
             exit
@@ -167,6 +173,7 @@ function WindowManager {
     }
     else {
         #for all other is this general script
+        Start-Sleep -Seconds 1
         if ($null -ne $arguments) {
             Start-Process -FilePath $filepath -Argumentlist $arguments;
         }
@@ -340,7 +347,7 @@ if ($LoginsJob.State -eq "Completed") {
     $LoadingForm.Close()
 }
 
-
+Write-Output $Credentials
 
 # Create Window
 $Mainform = New-Object System.Windows.forms.Form
@@ -404,7 +411,12 @@ else {
     [System.Windows.Forms.MessageBox]::Show( "Please copy BlueZzz Folder To this Folder" , "BlueZzz Not Found")
 }
 
-
+$OnePasswordButton = New-Object System.Windows.Forms.Button
+$OnePasswordButton.Location = New-Object System.Drawing.Point(160, 30)
+$OnePasswordButton.Size = New-Object System.Drawing.Size(100, 85)
+$OnePasswordButton.Text = '1Password Master Pass'
+$Mainform.AcceptButton = $OnePasswordButton
+$Mainform.Controls.Add($OnePasswordButton)
 
 $label = New-Object System.Windows.Forms.Label
 $label.Location = New-Object System.Drawing.Point(5, 10)
@@ -452,6 +464,12 @@ if (Test-Path $PectPath) {
         }
     )
 }
+$OnePasswordButton.Add_Click(
+    {
+        $i = $Credentials.title.IndexOf("MasterPass")
+        WindowManager "Master" $Credentials[$i].password
+    }
+)
 
 $Mainform.Add_Shown( { $ToxButton.Select() })
 $resultofform = $Mainform.ShowDialog()
