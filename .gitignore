@@ -233,3 +233,9 @@ logs/a
 logs/BlueZzz.log
 PECTv1.5/WINDOWS/Variables.txt
 logs
+PECTv1.5/WINDOWS/CRF_sessions/CRF_BackUP.ws
+PECTv1.5/WINDOWS/CRF_sessions/CRF_BCP.ws
+PECTv1.5/WINDOWS/CRF_sessions/CRF_C000_DV02.ws
+PECTv1.5/WINDOWS/CRF_sessions/CRF_C000_EX01.ws
+PECTv1.5/WINDOWS/CRF_sessions/CRF_CICSEXPL.ws
+PECTv1.5/WINDOWS/CRF_sessions/CRF_TSAD.ws
