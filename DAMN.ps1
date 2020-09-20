@@ -1,22 +1,61 @@
 #requires -version 3
 Import-Module .\AX\AutoItX.psd1 #Import Automation Library
+Import-Module .\GnuPg.psm1 #Import GpG encryption module
 $MasterPassword = ""
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-
-
-
+$CurrentVersion = "1.2"
+#Version Control
+$repo = "Logotrop/DAMN"
+$file = "DAMN.zip"
+$releases = "https://api.github.com/repos/$repo/releases"
+$tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
+Write-Host ("Running Version " + $CurrentVersion)
+Write-Host ("Latest Version " + $tag)
+if ($CurrentVersion -ne $tag) {
+    [System.Windows.Forms.MessageBox]::Show( "Downloading new version of DAMN - $tag`nCurently running version - $CurrentVersion" , "New Version Available!") 
+    $download = "https://github.com/$repo/releases/download/$tag/$file"
+    $name = $file.Split(".")[0]
+    $zip = "$name-$tag.zip"
+    $dir = "$name-$tag"
+    
+    Write-Host Dowloading latest release
+    Invoke-WebRequest $download -Out $zip
+    
+    Write-Host Extracting release files
+    Expand-Archive $zip -Force
+    #Remove Temp Zip
+    Remove-Item $zip -Force
+    # Moving from temp dir to This dir
+    $files = Get-ChildItem -Path $dir -Recurse
+    ForEach ($file In $files) {
+        try {
+            Copy-Item -Path $file.FullName -Destination $file.FullName.Replace("\$dir","") -Force
+        } catch {
+            Write-Host "Exception! $file"
+            If ($file -Match "DAMN") {
+                Start-job -ScriptBlock {
+                    Start-Sleep -Seconds 20
+                    Copy-Item -Path $file.FullName -Destination $file.FullName.Replace("\$dir","") -Force
+                }
+                Get-job
+                exit
+            }
+            
+        }
+        
+    }
+    #Get-ChildItem -Path $dir -Recurse | Move-Item -Destination ($pwd).path
+    
+    # Removing temp folder
+    Remove-Item $dir -Recurse -Force
+}
 
 #Make Tray Icon
 $SystrayLauncher = New-Object System.Windows.Forms.NotifyIcon
 $SystrayLauncher.Icon = ($pwd).path + "\icon.ico"
 $SystrayLauncher.Text = "DAMN"
 $SystrayLauncher.Visible = $true
-
-
-
-
-
 
 
 #Signin into OnePassword
@@ -119,7 +158,6 @@ function WindowManager {
     
         Notes {
             $ProcessName = "IBM Notes"
-            $arguments = ""
             $filepath = "C:\Notes\notes.exe"
             $NeedsEnter = $True
             Break
@@ -142,7 +180,7 @@ function WindowManager {
 
         Master {
             $ProcessName = "Unlock"
-            $filepath = "C:\Users\"+$env:USERNAME +"\AppData\Local\1Password\app\7\1Password.exe"
+            $filepath = "C:\Users\" + $env:USERNAME + "\AppData\Local\1Password\app\7\1Password.exe"
             $NeedsEnter = $True
         }
 
@@ -347,7 +385,6 @@ if ($LoginsJob.State -eq "Completed") {
     $LoadingForm.Close()
 }
 
-Write-Output $Credentials
 
 # Create Window
 $Mainform = New-Object System.Windows.forms.Form
