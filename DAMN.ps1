@@ -5,60 +5,17 @@ $MasterPassword = ""
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 $CurrentVersion = "1.2"
+Out-File -FilePath $pwd\version.txt -Encoding ASCII -InputObject $CurrentVersion
 #Version Control
 $repo = "Logotrop/DAMN"
-$file = "DAMN.zip"
 $releases = "https://api.github.com/repos/$repo/releases"
 $tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
 Write-Host ("Running Version " + $CurrentVersion)
 Write-Host ("Latest Version " + $tag)
 if ($CurrentVersion -ne $tag) {
-    [System.Windows.Forms.MessageBox]::Show( "Downloading new version of DAMN - $tag`nCurently running version - $CurrentVersion" , "New Version Available!") 
-    $download = "https://github.com/$repo/releases/download/$tag/$file"
-    $name = $file.Split(".")[0]
-    $zip = "$name-$tag.zip"
-    $dir = "$name-$tag"
-    
-    Write-Host Dowloading latest release
-    Invoke-WebRequest $download -Out $zip
-    
-    Write-Host Extracting release files
-    Expand-Archive $zip -Force
-    #Remove Temp Zip
-    Remove-Item $zip -Force
-    # Moving from temp dir to This dir
-    $files = Get-ChildItem -Path $dir -Recurse
-    ForEach ($file In $files) {
-        if ($file -Match "DAMN") {
-            
-            Write-Host "Exception! $file"
-            $destname = $file.FullName
-            $destname = $destname.Replace("\$dir","")
-            $destname = $destname.Replace($file,"DAMN-new.exe")
-            Write-Host $destname
-            Copy-Item -Path $file.FullName -Destination $destname -Force
-
-            $arguments = $file.FullName
-            & ".\UD.ps1 $arguments"
-            exit
-        } else {
-
-        }
-        try {
-            Copy-Item -Path $file.FullName -Destination $file.FullName.Replace("\$dir","") -Force
-        } catch {
-            Write-Host "Exception! $file"
-            If ($file -Match "DAMN.exe") {
-                [System.Windows.Forms.MessageBox]::Show( "Error-02 Error downloading version - $tag`nPlease report it on Github`nhttps://github.com/Logotrop/DAMN/issues" , "Error-02")
-            }
-            
-        }
-        
-    }
-    #Get-ChildItem -Path $dir -Recurse | Move-Item -Destination ($pwd).path
-    
-    # Removing temp folder
-    Remove-Item $dir -Recurse -Force
+    [System.Windows.Forms.MessageBox]::Show( "New version Found V$tag`nCurently running version V$CurrentVersion`nPlease update using Update.exe" , "New Version Available!")
+    Invoke-Item -Path $pwd
+    exit
 }
 
 #Make Tray Icon
