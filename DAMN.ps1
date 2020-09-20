@@ -29,17 +29,27 @@ if ($CurrentVersion -ne $tag) {
     # Moving from temp dir to This dir
     $files = Get-ChildItem -Path $dir -Recurse
     ForEach ($file In $files) {
+        if ($file -Match "DAMN") {
+            
+            Write-Host "Exception! $file"
+            $destname = $file.FullName
+            $destname = $destname.Replace("\$dir","")
+            $destname = $destname.Replace($file,"DAMN-new.exe")
+            Write-Host $destname
+            Copy-Item -Path $file.FullName -Destination $destname -Force
+
+            $arguments = $file.FullName
+            & ".\UD.ps1 $arguments"
+            exit
+        } else {
+
+        }
         try {
             Copy-Item -Path $file.FullName -Destination $file.FullName.Replace("\$dir","") -Force
         } catch {
             Write-Host "Exception! $file"
-            If ($file -Match "DAMN") {
-                Start-job -ScriptBlock {
-                    Start-Sleep -Seconds 20
-                    Copy-Item -Path $file.FullName -Destination $file.FullName.Replace("\$dir","") -Force
-                }
-                Get-job
-                exit
+            If ($file -Match "DAMN.exe") {
+                [System.Windows.Forms.MessageBox]::Show( "Error-02 Error downloading version - $tag`nPlease report it on Github`nhttps://github.com/Logotrop/DAMN/issues" , "Error-02")
             }
             
         }
@@ -185,7 +195,7 @@ function WindowManager {
         }
 
         Error {
-            Invoke-Expression "[System.Windows.MessageBox]::Show('Invalid Option - Error code: 01','Error - 01','OK','Error')"
+            Invoke-Expression "[System.Windows.MessageBox]::Show('Invalid Option - Error code: 01`nPlease report it on Github`nhttps://github.com/Logotrop/DAMN/issues','Error - 01','OK','Error')"
             exit
         }
     
