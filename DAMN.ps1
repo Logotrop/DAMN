@@ -4,7 +4,7 @@ Import-Module .\GnuPg.psm1 #Import GpG encryption module
 $MasterPassword = ""
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-$CurrentVersion = "1.2"
+$CurrentVersion = "1.1"
 Out-File -FilePath $pwd\version.txt -Encoding ASCII -InputObject $CurrentVersion
 #Version Control
 $repo = "Logotrop/DAMN"
@@ -54,19 +54,19 @@ function OPSignin {
     $label.Text = 'Please enter your Master password:'
     $form.Controls.Add($label)
 
-    $textBox = New-Object System.Windows.Forms.MaskedTextBox
-    $textBox.PasswordChar = "*"
-    $textBox.Location = New-Object System.Drawing.Point(10, 40)
-    $textBox.Size = New-Object System.Drawing.Size(260, 20)
-    $form.Controls.Add($textBox)
+    $PasswordBox = New-Object System.Windows.Forms.MaskedTextBox
+    $PasswordBox.PasswordChar = "*"
+    $PasswordBox.Location = New-Object System.Drawing.Point(10, 40)
+    $PasswordBox.Size = New-Object System.Drawing.Size(260, 20)
+    $form.Controls.Add($PasswordBox)
 
     $form.Topmost = $true
 
-    $form.Add_Shown( { $textBox.Select() })
+    $form.Add_Shown( { $PasswordBox.Select() })
     $resultofform = $form.ShowDialog()
 
     if ($resultofform -ne [System.Windows.Forms.DialogResult]::Cancel) {
-        $MasterPassword = $textBox.Text
+        $MasterPassword = $PasswordBox.Text
         #Get Global Session Token for all Signups up to 30 mins after
         $Session_Token = Invoke-Expression "echo $MasterPassword | $OPDIR signin ibm --raw"
         #Make Enviromental variable OPST = One Password Session Token, That will hold Session in PATH
@@ -212,15 +212,91 @@ function WindowManager {
 }
 
 # Setup of required stuff if not already installed.
-if (!(Test-Path $pwd\Op\op.exe)) {
+if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
     Write-Output "OnePassword CLI Tool not found! Trying to istall it for you!"
     #OnePassword CLI tool instalation if not installed
-    Invoke-WebRequest "https://cache.agilebits.com/dist/1P/op/pkg/v1.6.0/op_windows_amd64_v1.6.0.zip" -OutFile OP.zip
+    Invoke-WebRequest "https://cache.agilebits.com/dist/1P/op/pkg/v1.6.0/op_windows_amd64_v1.6.0.zip" -OutFile op.zip
     Expand-Archive -Path $pwd\op.zip -DestinationPath $pwd\Op
+    Expand-Archive -Path $pwd\op.zip -DestinationPath C:\\Op
+    Remove-Item -Path $pwd\op.zip
 
     #Create Enviromental variables needed for this to work
     Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST',' ',[System.EnvironmentVariableTarget]::User)"
     Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF',' ',[System.EnvironmentVariableTarget]::User)"
+    $firsttime = [System.Windows.Forms.MessageBox]::Show( "Are you using DAMN for the first time?" , "Initial Setup", "YesNo")
+    if ($firsttime -eq "Yes") {
+        [System.Windows.Forms.MessageBox]::Show( "Please make sure to have 2FA disabled for this to work" , "Initial Setup")
+        [String]$OPDIR = "$pwd\Op\op.exe"
+
+        $FirstForm = New-Object System.Windows.Forms.Form
+        $FirstForm.Text = "One password First time setup"
+        $FirstForm.Size = New-Object System.Drawing.Size(500, 500)
+        $FirstForm.StartPosition = "CenterScreen"
+
+        $Emailbox = New-Object System.windows.Forms.TextBox
+        $Emailbox.Size = New-Object System.Drawing.Size(200, 50)
+        $Emailbox.Location = New-Object System.Drawing.point(5, 50)
+        $Emailbox.Text = "Email"
+        $FirstForm.Controls.Add($Emailbox)
+
+        $SecretKeyBox = New-Object System.windows.Forms.TextBox
+        $SecretKeyBox.Size = New-Object System.Drawing.Size(200, 50)
+        $SecretKeyBox.Location = New-Object System.Drawing.point(5, 105)
+        $SecretKeyBox.Text = "Secret key"
+        $FirstForm.Controls.Add($SecretKeyBox)
+
+        $PasswordFirstBox = New-Object System.windows.Forms.TextBox
+        $PasswordFirstBox.Size = New-Object System.Drawing.Size(200, 50)
+        $PasswordFirstBox.Location = New-Object System.Drawing.point(5, 160)
+        $PasswordFirstBox.Text = "Master Password"
+        $FirstForm.Controls.Add($PasswordFirstBox)
+
+        $LoginButton = New-Object System.Windows.Forms.Button
+        $LoginButton.Location = New-Object System.Drawing.Point(340, 420)
+        $LoginButton.Size = New-Object System.Drawing.Size(150, 40)
+        $LoginButton.Text = 'Log In'
+        $FirstForm.AcceptButton = $LoginButton
+        $FirstForm.Controls.Add($LoginButton)
+
+        $LoginButton.Add_Click(
+            {    
+                $MasterPassword = $PasswordFirstBox.Text
+                $email = $Emailbox.Text
+                $Secretkey = $SecretKeyBox.Text
+                $Session_Token = Invoke-Expression "echo $MasterPassword | $OPDIR signin ibm.ent.1password.com $email $Secretkey --raw"
+                Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
+                Out-File -FilePath $pwd\session.txt -Encoding ASCII -InputObject $Session_Token #Backup Session?
+                $TimeFile = Get-Date #Time stamp to verify age of the session
+                $TimeFile = $TimeFile.AddMinutes(30)
+                #Make Enviromental variable OPTF = One Password Time File, That will hold Time in PATH
+                Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF','$TimeFile',[System.EnvironmentVariableTarget]::User)"
+                Out-File -Append $pwd\session.txt -Encoding ASCII -InputObject $TimeFile  #Backup Time?
+                if ($Session_Token -ne $null) {
+                    $createlogins = [System.Windows.Forms.MessageBox]::Show( "Do you want to create correct 1P Login Names?" , "Initial Setup", "YesNo")
+                    if ($createlogins -eq "Yes") {
+                        Invoke-Expression ('op create item Login username="" --title BlueZzz --session ' + $Session_Token)
+                        Invoke-Expression ('op create item Login username="" --title TOX --session ' + $Session_Token)
+                        Invoke-Expression ('op create item Login username="" --title "IBM Notes" --session ' + $Session_Token)
+                        [System.Windows.Forms.MessageBox]::Show( "BlueZzz`nTOX`nIBM Notes`nCreated - Please fill in credentials in 1Password" , "Initial Setup")
+                    }
+                    
+                    
+                    [System.Windows.Forms.MessageBox]::Show( "Exiting" , "Initial Setup")
+                    $FirstForm.Close()
+                    exit
+                }
+
+            }
+            
+        )
+        
+
+
+
+
+        $FirstForm.Add_Shown( { $Login.Select() })
+        $FirstForm.ShowDialog()
+    }
 }
 #path for OP
 [String]$OPDIR = "$pwd\Op\op.exe"
