@@ -4,7 +4,8 @@ Import-Module .\GnuPg.psm1 #Import GpG encryption module
 $MasterPassword = ""
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-$CurrentVersion = "1.1"
+Add-Type System.Web.Security.Membership
+$CurrentVersion = "1.2.1"
 Out-File -FilePath $pwd\version.txt -Encoding ASCII -InputObject $CurrentVersion
 #Version Control
 $repo = "Logotrop/DAMN"
@@ -263,7 +264,19 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
                 $MasterPassword = $PasswordFirstBox.Text
                 $email = $Emailbox.Text
                 $Secretkey = $SecretKeyBox.Text
-                $Session_Token = Invoke-Expression "echo $MasterPassword | $OPDIR signin ibm.ent.1password.com $email $Secretkey --raw"
+                $MasterPassword = "DEADonepasswordnet1029"
+                $email = "Marek.Dobes@ibm.com"
+                $Secretkey = "A3-F2HNP4-R7LRMZ-K98EQ-G6ZGX-WYGJA-6YYVW"
+                $MasterPassword = "DEADonepasswordnet1029"
+                for ($i = 0; $i -lt 26; $i++) {
+                    [String]$deviceuuid += $(Get-Random -InputObject a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, 2, 3, 4, 5, 6, 7)
+                }
+    
+                $env:OP_DEVICE = $deviceuuid
+                Invoke-Expression "echo $MasterPassword | C:\\Op\op signin ibm.ent.1password.com $email $SecretKey --raw"
+                $Session_Token = Invoke-Expression "echo $MasterPassword | C:\\Op\op signin ibm --raw"
+                Write-Output $Session_Token
+                [System.Windows.Forms.MessageBox]::Show( $Session_Token , "Initial Setup")
                 Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
                 Out-File -FilePath $pwd\session.txt -Encoding ASCII -InputObject $Session_Token #Backup Session?
                 $TimeFile = Get-Date #Time stamp to verify age of the session
@@ -294,7 +307,7 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
 
 
 
-        $FirstForm.Add_Shown( { $Login.Select() })
+        $FirstForm.Add_Shown( { $LoginButton.Select() })
         $FirstForm.ShowDialog()
     }
 }
