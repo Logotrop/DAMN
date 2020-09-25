@@ -264,10 +264,6 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
                 $MasterPassword = $PasswordFirstBox.Text
                 $email = $Emailbox.Text
                 $Secretkey = $SecretKeyBox.Text
-                $MasterPassword = "DEADonepasswordnet1029"
-                $email = "Marek.Dobes@ibm.com"
-                $Secretkey = "A3-F2HNP4-R7LRMZ-K98EQ-G6ZGX-WYGJA-6YYVW"
-                $MasterPassword = "DEADonepasswordnet1029"
                 for ($i = 0; $i -lt 26; $i++) {
                     [String]$deviceuuid += $(Get-Random -InputObject a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, 2, 3, 4, 5, 6, 7)
                 }
