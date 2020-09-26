@@ -1,10 +1,9 @@
 #requires -version 3
 Import-Module .\AX\AutoItX.psd1 #Import Automation Library
-Import-Module .\GnuPg.psm1 #Import GpG encryption module
+#Import-Module .\GnuPg.psm1 #Import GpG encryption module
 $MasterPassword = ""
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-Add-Type System.Web.Security.Membership
 $CurrentVersion = "1.2.1"
 Out-File -FilePath $pwd\version.txt -Encoding ASCII -InputObject $CurrentVersion
 #Version Control
@@ -69,7 +68,7 @@ function OPSignin {
     if ($resultofform -ne [System.Windows.Forms.DialogResult]::Cancel) {
         $MasterPassword = $PasswordBox.Text
         #Get Global Session Token for all Signups up to 30 mins after
-        $Session_Token = Invoke-Expression "echo $MasterPassword | $OPDIR signin ibm --raw"
+        $Session_Token = Invoke-Expression "echo $MasterPassword | C:\\OP\op.exe signin ibm --raw"
         #Make Enviromental variable OPST = One Password Session Token, That will hold Session in PATH
         Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
         Out-File -FilePath $pwd\session.txt -Encoding ASCII -InputObject $Session_Token #Backup Session?
@@ -213,7 +212,7 @@ function WindowManager {
 }
 
 # Setup of required stuff if not already installed.
-if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
+if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe)) -or (!(Test-Path C:\Users\$env:USERNAME\.op\config))) {
     Write-Output "OnePassword CLI Tool not found! Trying to istall it for you!"
     #OnePassword CLI tool instalation if not installed
     Invoke-WebRequest "https://cache.agilebits.com/dist/1P/op/pkg/v1.6.0/op_windows_amd64_v1.6.0.zip" -OutFile op.zip
@@ -222,12 +221,15 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
     Remove-Item -Path $pwd\op.zip
 
     #Create Enviromental variables needed for this to work
-    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST',' ',[System.EnvironmentVariableTarget]::User)"
-    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF',' ',[System.EnvironmentVariableTarget]::User)"
+    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','placeholder',[System.EnvironmentVariableTarget]::User)"
+    Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF','placeholder',[System.EnvironmentVariableTarget]::User)"
     $firsttime = [System.Windows.Forms.MessageBox]::Show( "Are you using DAMN for the first time?" , "Initial Setup", "YesNo")
-    if ($firsttime -eq "Yes") {
+    if ( ($firsttime -eq "Yes") -or (!(Test-Path C:\Users\$env:USERNAME\.op\config))) {
+        if (Test-Path C:\Users\$env:USERNAME\.op\config) {
+            [System.Windows.Forms.MessageBox]::Show( "DAMN detected no config file`nPlease do the setup again for recovery" , "Initial Setup")
+        }
         [System.Windows.Forms.MessageBox]::Show( "Please make sure to have 2FA disabled for this to work" , "Initial Setup")
-        [String]$OPDIR = "$pwd\Op\op.exe"
+        [String]$OPDIR = "C:\\Op\op.exe"
 
         $FirstForm = New-Object System.Windows.Forms.Form
         $FirstForm.Text = "One password First time setup"
@@ -290,9 +292,10 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
                     }
                     
                     
-                    [System.Windows.Forms.MessageBox]::Show( "Exiting" , "Initial Setup")
-                    $FirstForm.Close()
-                    exit
+                    $ok = [System.Windows.Forms.MessageBox]::Show( "Exiting" , "Initial Setup")
+                    if ($ok -eq "OK") {
+                        $FirstForm.close()
+                    }
                 }
 
             }
@@ -308,7 +311,7 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe))) {
     }
 }
 #path for OP
-[String]$OPDIR = "$pwd\Op\op.exe"
+[String]$OPDIR = "C:\\Op\op.exe"
 
 
 #Get values from enviromental variables
@@ -316,7 +319,7 @@ $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable
 #$TimeFile = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPFT',[System.EnvironmentVariableTarget]::User)"
 
 #Check if session exists
-if ($Session_Token -eq '' -or $Session_Token -eq ' ' -or $Session_Token -eq '0') {
+if ($Session_Token -eq '' -or $Session_Token -eq ' ' -or $Session_Token -eq '0' -or $null -eq $Session_Token) {
     
     Write-Output "No Session Token in ENV!"
     if (Test-Path $pwd\session.txt) {
