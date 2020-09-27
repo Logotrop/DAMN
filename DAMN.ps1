@@ -282,6 +282,9 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe)) -or (!(Test-P
                 #Make Enviromental variable OPTF = One Password Time File, That will hold Time in PATH
                 Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF','$TimeFile',[System.EnvironmentVariableTarget]::User)"
                 Out-File -Append $pwd\session.txt -Encoding ASCII -InputObject $TimeFile  #Backup Time?
+                $changedeviceuuid = Get-Content -Path "C:\Users\$env:USERNAME\.op\config"
+                $changedeviceuuid[2] = 	'	"device": "' + $env:OP_DEVICE + '",'
+                $changedeviceuuid | Set-Content -Path "C:\Users\$env:USERNAME\.op\config"
                 if ($Session_Token -ne $null) {
                     $createlogins = [System.Windows.Forms.MessageBox]::Show( "Do you want to create correct 1P Login Names?" , "Initial Setup", "YesNo")
                     if ($createlogins -eq "Yes") {
