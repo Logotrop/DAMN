@@ -6,7 +6,7 @@ yes.
 
 # Setup
 [Download Latest stable version](https://github.com/Logotrop/DAMN/releases)
-run Setup.ps1 in Powershell
+run DAMN.exe and fill all information from 1Password
 add DAMN.exe shortcut to startup folder
 
 # Wiki
