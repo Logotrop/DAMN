@@ -4,7 +4,7 @@ Import-Module .\AX\AutoItX.psd1 #Import Automation Library
 $MasterPassword = ""
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-$CurrentVersion = "1.2.1"
+$CurrentVersion = "1.2.2"
 Out-File -FilePath $pwd\version.txt -Encoding ASCII -InputObject $CurrentVersion
 #Version Control
 $repo = "Logotrop/DAMN"
@@ -27,46 +27,63 @@ $SystrayLauncher.Visible = $true
 
 #Signin into OnePassword
 function OPSignin {
-    $form = New-Object System.Windows.Forms.Form
-    $form.Text = 'DAMN'
-    $form.Size = New-Object System.Drawing.Size(300, 200)
-    $form.StartPosition = 'CenterScreen'
-
-    $okButton = New-Object System.Windows.Forms.Button
-    $okButton.Location = New-Object System.Drawing.Point(75, 120)
-    $okButton.Size = New-Object System.Drawing.Size(75, 23)
-    $okButton.Text = 'OK'
-    $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $form.AcceptButton = $okButton
-    $form.Controls.Add($okButton)
-
-    $cancelButton = New-Object System.Windows.Forms.Button
-    $cancelButton.Location = New-Object System.Drawing.Point(150, 120)
-    $cancelButton.Size = New-Object System.Drawing.Size(75, 23)
-    $cancelButton.Text = 'Cancel'
-    $cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
-    $form.CancelButton = $cancelButton
-    $form.Controls.Add($cancelButton)
-
-    $label = New-Object System.Windows.Forms.Label
-    $label.Location = New-Object System.Drawing.Point(10, 20)
-    $label.Size = New-Object System.Drawing.Size(280, 20)
-    $label.Text = 'Please enter your Master password:'
-    $form.Controls.Add($label)
-
-    $PasswordBox = New-Object System.Windows.Forms.MaskedTextBox
-    $PasswordBox.PasswordChar = "*"
-    $PasswordBox.Location = New-Object System.Drawing.Point(10, 40)
-    $PasswordBox.Size = New-Object System.Drawing.Size(260, 20)
-    $form.Controls.Add($PasswordBox)
-
-    $form.Topmost = $true
-
-    $form.Add_Shown( { $PasswordBox.Select() })
-    $resultofform = $form.ShowDialog()
-
-    if ($resultofform -ne [System.Windows.Forms.DialogResult]::Cancel) {
-        $MasterPassword = $PasswordBox.Text
+    if ($MasterPassword -eq "") {
+        $form = New-Object System.Windows.Forms.Form
+        $form.Text = 'DAMN'
+        $form.Size = New-Object System.Drawing.Size(300, 200)
+        $form.StartPosition = 'CenterScreen'
+    
+        $okButton = New-Object System.Windows.Forms.Button
+        $okButton.Location = New-Object System.Drawing.Point(75, 120)
+        $okButton.Size = New-Object System.Drawing.Size(75, 23)
+        $okButton.Text = 'OK'
+        $okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+        $form.AcceptButton = $okButton
+        $form.Controls.Add($okButton)
+    
+        $cancelButton = New-Object System.Windows.Forms.Button
+        $cancelButton.Location = New-Object System.Drawing.Point(150, 120)
+        $cancelButton.Size = New-Object System.Drawing.Size(75, 23)
+        $cancelButton.Text = 'Cancel'
+        $cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+        $form.CancelButton = $cancelButton
+        $form.Controls.Add($cancelButton)
+    
+        $label = New-Object System.Windows.Forms.Label
+        $label.Location = New-Object System.Drawing.Point(10, 20)
+        $label.Size = New-Object System.Drawing.Size(280, 20)
+        $label.Text = 'Please enter your Master password:'
+        $form.Controls.Add($label)
+    
+        $PasswordBox = New-Object System.Windows.Forms.MaskedTextBox
+        $PasswordBox.PasswordChar = "*"
+        $PasswordBox.Location = New-Object System.Drawing.Point(10, 40)
+        $PasswordBox.Size = New-Object System.Drawing.Size(260, 20)
+        $form.Controls.Add($PasswordBox)
+    
+        $form.Topmost = $true
+    
+        $form.Add_Shown( { $PasswordBox.Select() })
+        $resultofform = $form.ShowDialog()
+    
+        if ($resultofform -ne [System.Windows.Forms.DialogResult]::Cancel) {
+            $MasterPassword = $PasswordBox.Text
+            #Get Global Session Token for all Signups up to 30 mins after
+            $Session_Token = Invoke-Expression "echo $MasterPassword | C:\\OP\op.exe signin ibm --raw"
+            #Make Enviromental variable OPST = One Password Session Token, That will hold Session in PATH
+            Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPST','$Session_Token',[System.EnvironmentVariableTarget]::User)"
+            Out-File -FilePath $pwd\session.txt -Encoding ASCII -InputObject $Session_Token #Backup Session?
+            $TimeFile = Get-Date #Time stamp to verify age of the session
+            $TimeFile = $TimeFile.AddMinutes(30)
+            #Make Enviromental variable OPTF = One Password Time File, That will hold Time in PATH
+            Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF','$TimeFile',[System.EnvironmentVariableTarget]::User)"
+            Out-File -Append $pwd\session.txt -Encoding ASCII -InputObject $TimeFile  #Backup Time?
+        }
+        elseif ($resultofform -eq [System.Windows.Forms.DialogResult]::Cancel) {
+            exit
+        }
+    }
+    else {
         #Get Global Session Token for all Signups up to 30 mins after
         $Session_Token = Invoke-Expression "echo $MasterPassword | C:\\OP\op.exe signin ibm --raw"
         #Make Enviromental variable OPST = One Password Session Token, That will hold Session in PATH
@@ -78,9 +95,7 @@ function OPSignin {
         Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF','$TimeFile',[System.EnvironmentVariableTarget]::User)"
         Out-File -Append $pwd\session.txt -Encoding ASCII -InputObject $TimeFile  #Backup Time?
     }
-    elseif ($resultofform -eq [System.Windows.Forms.DialogResult]::Cancel) {
-        exit
-    }
+    
 }
 
 # Function to find wether a specific login windo
@@ -210,7 +225,86 @@ function WindowManager {
 
     }
 }
+# Function for getting all logins from 1password
+Function GetLogins {
+    #List all Logins 
+    $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
+    #Client Array of usernames and passwords
+    $Credentials = @()
+    #Define Progress bar Form
+    $LoadingForm = New-Object System.Windows.Forms.Form
+    $LoadingForm.Text = "Getting Passwords from 1Password"
+    $LoadingForm.Size = New-Object System.Drawing.Size(500, 100)
+    $LoadingForm.StartPosition = "CenterScreen"
 
+    # define Progress Bar
+    $LoadingBar = New-Object System.Windows.Forms.ProgressBar
+    $LoadingBar.Size = New-Object System.Drawing.Size(475, 20)
+    $LoadingBar.Location = New-Object System.Drawing.Point(5, 10)
+    $LoadingBar.Maximum = 50
+    $LoadingBar.Step = 1
+    $LoadingForm.Controls.Add($LoadingBar)
+
+    #Make Progress bar Visible but not interactable
+    $LoadingForm.Visible = $true
+
+    # Start logging in on another thread
+    $LoginsJob = Start-job -ScriptBlock {
+        $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+        $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
+        Write-Output (Invoke-Expression $allLogins) }
+    #Increase Progress While the job is running
+    while ($LoginsJob.State -ne "Completed") {
+        Start-Sleep -Milliseconds 500
+        $LoadingBar.PerformStep()
+    }
+    #Get result of the job - Loging in
+    $ArrayOfLogins = Receive-Job $LoginsJob
+    if ($LoginsJob.State -eq "Completed") {
+        #Failsafe for correct input later
+        while ( $Null -eq $ArrayOfLogins) {
+            #Reset Progressbar
+            $LoadingBar.Value = 0
+            OPSignin
+        
+            $LoginsJob = Start-job -ScriptBlock {
+                $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+                $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
+                Write-Output (Invoke-Expression $allLogins) } 
+            while ($LoginsJob.State -ne "Completed") {
+                Start-Sleep -Milliseconds 500
+                $LoadingBar.PerformStep()
+                Get-Job
+            }
+            $ArrayOfLogins = Receive-Job $LoginsJob
+        }
+        #Set max progress to number of logins
+        $LoadingBar.Maximum = $ArrayOfLogins.count
+
+        #Go thru all logins one by one
+        foreach ($i in $ArrayOfLogins) {
+            #Formatting of Output
+            $i = $i.replace('"', "")
+            $i = $i.Replace("{", "")
+            $i = $i.replace('}', "")
+            #make each an array
+            $toarray = $i.split(",")
+            $toarray[0] = $toarray[0].replace('password:', '')
+            $toarray[1] = $toarray[1].replace('title:', '')
+            $toarray[2] = $toarray[2].replace('username:', '')
+            # Add another entry to Credentials 
+            $Credentials += @(
+                [pscustomobject]@{Title = $toarray[1]; username = $toarray[2]; password = $toarray[0] }
+            )
+        
+        
+        }
+        #Close Progress bar
+        $LoadingForm.Close()
+    }
+    $Credentials
+    return $Credentials
+}
 # Setup of required stuff if not already installed.
 if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe)) -or (!(Test-Path C:\Users\$env:USERNAME\.op\config))) {
     Write-Output "OnePassword CLI Tool not found! Trying to istall it for you!"
@@ -283,7 +377,7 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe)) -or (!(Test-P
                 Invoke-Expression "[System.Environment]::SetEnvironmentVariable('OPTF','$TimeFile',[System.EnvironmentVariableTarget]::User)"
                 Out-File -Append $pwd\session.txt -Encoding ASCII -InputObject $TimeFile  #Backup Time?
                 $changedeviceuuid = Get-Content -Path "C:\Users\$env:USERNAME\.op\config"
-                $changedeviceuuid[2] = 	'	"device": "' + $env:OP_DEVICE + '",'
+                $changedeviceuuid[2] = '	"device": "' + $env:OP_DEVICE + '",'
                 $changedeviceuuid | Set-Content -Path "C:\Users\$env:USERNAME\.op\config"
                 if ($Session_Token -ne $null) {
                     $createlogins = [System.Windows.Forms.MessageBox]::Show( "Do you want to create correct 1P Login Names?" , "Initial Setup", "YesNo")
@@ -354,96 +448,8 @@ if ($Session_Token -eq '' -or $Session_Token -eq ' ' -or $Session_Token -eq '0' 
 else {
     Write-Output "Found Session ENV Variable!"
 }
-
-#List all Logins 
-$allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
-
-#Client Array of usernames and passwords
-$Credentials = @()
-
-#Obsolete
-<#function Credentialsarray {
-    for ($i = 0; $i -lt $ArrayOfLogins.Count; $i++) {
-        $Credentials += @(
-        [pscustomobject]@{Title = ''; username = ''; password = '' }
-        )    
-    }
-}
-#>
-
-#Define Progress bar Form
-$LoadingForm = New-Object System.Windows.Forms.Form
-$LoadingForm.Text = "Getting Passwords from 1Password"
-$LoadingForm.Size = New-Object System.Drawing.Size(500, 100)
-$LoadingForm.StartPosition = "CenterScreen"
-
-# define Progress Bar
-$LoadingBar = New-Object System.Windows.Forms.ProgressBar
-$LoadingBar.Size = New-Object System.Drawing.Size(475, 20)
-$LoadingBar.Location = New-Object System.Drawing.Point(5, 10)
-$LoadingBar.Maximum = 50
-$LoadingBar.Step = 1
-$LoadingForm.Controls.Add($LoadingBar)
-
-#Make Progress bar Visible but not interactable
-$LoadingForm.Visible = $true
-
-# Start logging in on another thread
-$LoginsJob = Start-job -ScriptBlock {
-    $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
-    $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
-    Write-Output (Invoke-Expression $allLogins) }
-#Increase Progress While the job is running
-while ($LoginsJob.State -ne "Completed") {
-    Start-Sleep -Milliseconds 500
-    $LoadingBar.PerformStep()
-}
-#Get result of the job - Loging in
-$ArrayOfLogins = Receive-Job $LoginsJob
-if ($LoginsJob.State -eq "Completed") {
-    #Failsafe for correct input later
-    while ( $Null -eq $ArrayOfLogins) {
-        #Reset Progressbar
-        $LoadingBar.Value = 0
-        OPSignin
-        
-        $LoginsJob = Start-job -ScriptBlock {
-            $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
-            $allLogins = 'C://op/op list items --categories "Login" --session ' + $Session_Token + ' | C://op/op get item - --fields title,username,password --session ' + $Session_Token
-            Write-Output (Invoke-Expression $allLogins) } 
-        while ($LoginsJob.State -ne "Completed") {
-            Start-Sleep -Milliseconds 500
-            $LoadingBar.PerformStep()
-            Get-Job
-        }
-        $ArrayOfLogins = Receive-Job $LoginsJob
-    }
-    #Set max progress to number of logins
-    $LoadingBar.Maximum = $ArrayOfLogins.count
-
-    #Go thru all logins one by one
-    foreach ($i in $ArrayOfLogins) {
-        #Formatting of Output
-        $i = $i.replace('"', "")
-        $i = $i.Replace("{", "")
-        $i = $i.replace('}', "")
-        #make each an array
-        $toarray = $i.split(",")
-        $toarray[0] = $toarray[0].replace('password:', '')
-        $toarray[1] = $toarray[1].replace('title:', '')
-        $toarray[2] = $toarray[2].replace('username:', '')
-        # Add another entry to Credentials 
-        $Credentials += @(
-            [pscustomobject]@{Title = $toarray[1]; username = $toarray[2]; password = $toarray[0] }
-        )
-        
-        
-    }
-    #Close Progress bar
-    $LoadingForm.Close()
-}
-
-
+# initial logins
+$Credentials = GetLogins
 # Create Window
 $Mainform = New-Object System.Windows.forms.Form
 $Mainform.Text = 'DAMN'
@@ -503,15 +509,36 @@ if (Test-Path $PectPath) {
     $Mainform.Controls.Add($PectButton)
 }
 else {
-    [System.Windows.Forms.MessageBox]::Show( "Please copy BlueZzz Folder To this Folder" , "BlueZzz Not Found")
+    [System.Windows.Forms.MessageBox]::Show( "Please move BlueZzz Folder To this Folder" , "BlueZzz Not Found")
 }
-
+$Dark = 2
 $OnePasswordButton = New-Object System.Windows.Forms.Button
 $OnePasswordButton.Location = New-Object System.Drawing.Point(160, 30)
-$OnePasswordButton.Size = New-Object System.Drawing.Size(100, 85)
+$OnePasswordButton.Size = New-Object System.Drawing.Size(120, 85)
 $OnePasswordButton.Text = '1Password Master Pass'
 $Mainform.AcceptButton = $OnePasswordButton
 $Mainform.Controls.Add($OnePasswordButton)
+# Create Update button
+$UpdateButton = New-Object System.Windows.Forms.Button
+$UpdateButton.Location = New-Object System.Drawing.Point(160, 515)
+$UpdateButton.Size = New-Object System.Drawing.Size(120, 40)
+$UpdateButton.Text = 'Update passwords'
+$Mainform.AcceptButton = $UpdateButton
+$Mainform.Controls.Add($UpdateButton)
+# Super Secret
+$SuperSecret = New-Object System.Windows.Forms.Button
+$SuperSecret.Location = New-Object System.Drawing.Point(1800, 950)
+$SuperSecret.Size = New-Object System.Drawing.Size(120, 40)
+$SuperSecret.Text = 'Secret Setting'
+$Mainform.AcceptButton = $SuperSecret
+$Mainform.Controls.Add($SuperSecret)
+# Dark Mode
+$DarkMode = New-Object System.Windows.Forms.Button
+$DarkMode.Location = New-Object System.Drawing.Point(5, 515)
+$DarkMode.Size = New-Object System.Drawing.Size(120, 40)
+$DarkMode.Text = 'Dark Mode'
+$Mainform.AcceptButton = $DarkMode
+$Mainform.Controls.Add($DarkMode)
 
 $label = New-Object System.Windows.Forms.Label
 $label.Location = New-Object System.Drawing.Point(5, 10)
@@ -561,10 +588,56 @@ if (Test-Path $PectPath) {
 }
 $OnePasswordButton.Add_Click(
     {
-        $i = $Credentials.title.IndexOf("MasterPass")
-        WindowManager "Master" $Credentials[$i].password
+        WindowManager "Master" $MasterPassword
     }
 )
+
+$UpdateButton.Add_Click(
+    {
+        $Credentials = GetLogins
+    }
+)
+$secretcodes = get-content $pwd\codes.txt
+$SuperSecret.Add_Click(
+    {
+        
+        $Mainform.BackColor = Get-Random -InputObject $secretcodes
+        $PectButton.BackColor = Get-Random -InputObject $secretcodes
+        $ToxButton.BackColor = Get-Random -InputObject $secretcodes
+        $BlueZzzButton.BackColor = Get-Random -InputObject $secretcodes
+        $UpdateButton.BackColor = Get-Random -InputObject $secretcodes
+        $OnePasswordButton.BackColor = Get-Random -InputObject $secretcodes
+        $SuperSecret.BackColor = Get-Random -InputObject $secretcodes
+        $IBMnotesButton.BackColor = Get-Random -InputObject $secretcodes
+        
+        
+    }
+)
+
+$DarkMode.Add_Click(
+    {
+        if ($Dark -eq 1) {
+            $Dark = 2
+            $Mainform.BackColor = "White"
+            $Mainform.ForeColor = "Black"
+        } else {
+            $Dark = 1
+            $Mainform.BackColor = "Black"
+            $PectButton.BackColor = "DimGray"
+            $ToxButton.BackColor = "DimGray"
+            $BlueZzzButton.BackColor = "DimGray"
+            $UpdateButton.BackColor = "DimGray"
+            $OnePasswordButton.BackColor = "DimGray"
+            $SuperSecret.BackColor = "DimGray"
+            $IBMnotesButton.BackColor = "DimGray"
+            $Mainform.ForeColor = "LightGray"
+        }
+        
+        
+        
+    }
+)
+
 
 $Mainform.Add_Shown( { $ToxButton.Select() })
 $resultofform = $Mainform.ShowDialog()
