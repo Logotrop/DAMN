@@ -545,7 +545,15 @@ $label.Location = New-Object System.Drawing.Point(5, 10)
 $label.Size = New-Object System.Drawing.Size(280, 20)
 $label.Text = 'Choose App to logon to:'
 $Mainform.Controls.Add($label)
-
+#Colors!
+$PectButton.BackColor = "LightBlue"
+$ToxButton.BackColor = "LightBlue"
+$BlueZzzButton.BackColor = "LightBlue"
+$UpdateButton.BackColor = "LightBlue"
+$OnePasswordButton.BackColor = "LightBlue"
+$SuperSecret.BackColor = "LightBlue"
+$IBMnotesButton.BackColor = "LightBlue"
+$DarkMode.backColor = "LightBlue"
 
 
 # Event Handeling - Button Click
@@ -616,20 +624,28 @@ $SuperSecret.Add_Click(
 
 $DarkMode.Add_Click(
     {
-        if ($Dark -eq 1) {
-            $Dark = 2
+        if ($Mainform.BackColor -eq "Black") {
             $Mainform.BackColor = "White"
+            $PectButton.BackColor = "LightBlue"
+            $ToxButton.BackColor = "LightBlue"
+            $BlueZzzButton.BackColor = "LightBlue"
+            $UpdateButton.BackColor = "LightBlue"
+            $OnePasswordButton.BackColor = "LightBlue"
+            $SuperSecret.BackColor = "LightBlue"
+            $IBMnotesButton.BackColor = "LightBlue"
+            $DarkMode.backColor = "LightBlue"
             $Mainform.ForeColor = "Black"
-        } else {
-            $Dark = 1
+        }
+        else {
             $Mainform.BackColor = "Black"
-            $PectButton.BackColor = "DimGray"
-            $ToxButton.BackColor = "DimGray"
-            $BlueZzzButton.BackColor = "DimGray"
-            $UpdateButton.BackColor = "DimGray"
-            $OnePasswordButton.BackColor = "DimGray"
-            $SuperSecret.BackColor = "DimGray"
-            $IBMnotesButton.BackColor = "DimGray"
+            $PectButton.BackColor = "DarkBlue"
+            $ToxButton.BackColor = "DarkBlue"
+            $BlueZzzButton.BackColor = "DarkBlue"
+            $UpdateButton.BackColor = "DarkBlue"
+            $OnePasswordButton.BackColor = "DarkBlue"
+            $SuperSecret.BackColor = "Purple"
+            $IBMnotesButton.BackColor = "DarkBlue"
+            $DarkMode.backColor = "DarkBlue"
             $Mainform.ForeColor = "LightGray"
         }
         
