@@ -10,7 +10,7 @@ if (Test-Path $pwd\Termsandconditions.txt) {
 
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-$CurrentVersion = "1.2.3"
+$CurrentVersion = "1.2.4"
 Out-File -FilePath $pwd\version.txt -Encoding ASCII -InputObject $CurrentVersion
 #Version Control
 $repo = "Logotrop/DAMN"
