@@ -80,7 +80,6 @@ Linen
 Magenta
 Maroon
 MediumAquamarine
-MediumAquamar
 MediumBlue
 MediumOrchid
 MediumPurple
@@ -132,12 +131,10 @@ Tan
 Teal
 Thistle
 Tomato
-Transparent
 Turquoise
 Violet
 Wheat
 White
 WhiteSmoke
 Yellow
-YellowGreen
 YellowGreen
