@@ -10,7 +10,7 @@ if (Test-Path $pwd\Termsandconditions.txt) {
 
 Add-Type -assembly System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-$CurrentVersion = "1.2.4"
+$CurrentVersion = "1.3"
 Out-File -FilePath $pwd\version.txt -Encoding ASCII -InputObject $CurrentVersion
 #Version Control
 $repo = "Logotrop/DAMN"
@@ -271,7 +271,10 @@ Function GetLogins {
     $ArrayOfLogins = Receive-Job $LoginsJob
     if ($LoginsJob.State -eq "Completed") {
         #Failsafe for correct input later
-        while ( $Null -eq $ArrayOfLogins) {
+        while ( ($Null -eq $ArrayOfLogins) -or $ArrayOfLogins.contains("ERROR")) {
+            if ($ArrayOfLogins.contains("ERROR")) {
+                Write-Output "ERROR Message found due to expired session!"
+            }
             #Reset Progressbar
             $LoadingBar.Value = 0
             OPSignin
@@ -421,7 +424,14 @@ if ((!(Test-Path $pwd\Op\op.exe)) -or (!(Test-Path C:\\Op\op.exe)) -or (!(Test-P
 
 
 #Get values from enviromental variables
-$Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+#Hotfix to make SignIn more consistent
+if ($MasterPassword -eq '' ){
+    $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+} else {
+    OPSignin
+    $Session_Token = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPST',[System.EnvironmentVariableTarget]::User)"
+}
+
 #$TimeFile = Invoke-Expression "[System.Environment]::GetEnvironmentVariable('OPFT',[System.EnvironmentVariableTarget]::User)"
 
 #Check if session exists

@@ -38,5 +38,5 @@ for in depth explanation and documentation visit [Wiki](https://github.com/Logot
  - Automatic Focal point alert copy
  - Automatic procedure open based on alert codes and code words
  - BlueZzz or Maximo integration
- - Care and PSA ticketing integration
+ - PSA ticketing integration
  
